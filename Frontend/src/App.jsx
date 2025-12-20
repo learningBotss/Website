@@ -1,8 +1,24 @@
-import React from 'react';
-import Login from './Pages/Login';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./Pages/Navbar";
+import Home from "./Pages/Home";
+import Qualification from "./Pages/Qualification";
+import SelectDisability from "./Pages/SelectDisability";
+import Quiz from "./Pages/Quiz";
+import Result from "./Pages/Result";
+import NotQualified from "./Pages/NotQualified";
 
-function App() {
-  return <Login />;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Navbar/>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/qualification" element={<Qualification/>}/>
+        <Route path="/select" element={<SelectDisability/>}/>
+        <Route path="/quiz/:name" element={<Quiz/>}/>
+        <Route path="/result/:level" element={<Result/>}/>
+        <Route path="/not-qualified" element={<NotQualified/>}/>
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
-export default App;
