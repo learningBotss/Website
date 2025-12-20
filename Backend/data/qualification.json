@@ -1,5 +1,47 @@
 [
-  { "id": 1, "question": "Did the students have slow processing speed?" },
-  { "id": 2, "question": "Did the students easily distracted?" },
-  { "id": 3, "question": "Did the students need frequent breaks?" }
+  {
+    "id": 1,
+    "text": "Did the student have slow processing speed?",
+    "options": [
+      { "value": 1, "label": "Rarely" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" }
+    ]
+  },
+  {
+    "id": 2,
+    "text": "Did the student get easily distracted?",
+    "options": [
+      { "value": 1, "label": "Rarely" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" }
+    ]
+  },
+  {
+    "id": 3,
+    "text": "Did the student need frequent breaks?",
+    "options": [
+      { "value": 1, "label": "Rarely" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" }
+    ]
+  },
+  {
+    "id": 4,
+    "text": "Did the student have trouble understanding?",
+    "options": [
+      { "value": 1, "label": "Rarely" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" }
+    ]
+  },
+  {
+    "id": 5,
+    "text": "Did the student have spelling difficulties?",
+    "options": [
+      { "value": 1, "label": "Rarely" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" }
+    ]
+  }
 ]

@@ -25,10 +25,15 @@ DATA_DIR = BASE_DIR / "data"
 
 # Model untuk data yang dihantar dari Frontend
 class Answer(BaseModel):
-    answer: str
+    id: int
+    answer: int
 
 class QuizSubmission(BaseModel):
     answers: List[Answer]
+
+class QuizResult(BaseModel):
+    probability: str
+    percentage: float
 
 def load_quiz_file(name: str):
     file_path = DATA_DIR / f"{name}.json"
@@ -47,32 +52,57 @@ async def get_qualification():
         raise HTTPException(status_code=404, detail="Fail qualification.json tidak dijumpai")
     return data
 
-@app.post("/api/qualification")
+@app.post("/api/qualification", response_model=QuizResult)
 async def post_qualification(submission: QuizSubmission):
     answers = submission.answers
     if not answers:
-        return {"probability": "Low", "message": "No answers provided"}
+        return {"probability": "Low", "percentage": 0.0}
     
-    yes_count = sum(1 for a in answers if a.answer == "Yes")
-    probability = "High" if yes_count / len(answers) >= 0.8 else "Low"
-    return {"probability": probability}
+    score_map = {1: 1, 2: 2, 3: 3}
 
-@app.get("/api/{disability}")
+    max_score = len(answers) * 3
+    total_score = sum(a.answer for a in answers)
+    percentage = (total_score / max_score) * 100
+    probability = "High" if percentage >= 80 else "Low"
+
+    return {"probability": probability, "percentage": percentage}
+
+
+# Contoh lain endpoints tetap sama
+@app.get("/api/quiz/{disability}")
 async def get_disability(disability: str):
     if disability not in ["dyslexia", "dysgraphia", "dyscalculia"]:
         raise HTTPException(status_code=404, detail="Invalid disability")
     
     data = load_quiz_file(disability)
     if data is None:
-        raise HTTPException(status_code=404, detail=f"Fail {disability}.json tidak dijumpai")
+        raise HTTPException(status_code=404, detail=f"{disability}.json not found")
     return data
 
-@app.post("/api/{disability}")
+@app.post("/api/quiz/{disability}")
 async def post_disability(disability: str, submission: QuizSubmission):
     answers = submission.answers
     if not answers:
         return {"probability": "Low"}
     
-    yes_count = sum(1 for a in answers if a.answer == "Yes")
-    probability = "High" if yes_count / len(answers) >= 0.5 else "Low"
-    return {"probability": probability}
+    score_map = {
+        "Rarely": 1,
+        "Sometimes": 2,
+        "Often": 3
+    }
+    total_score = sum(score_map.get(a.answer, 0) for a in answers)
+    max_score = len(answers) * 3
+    percentage = (total_score / max_score) * 100
+    probability = "High" if percentage >= 50 else "Low"
+
+    return {"probability": probability, "percentage": percentage}
+
+@app.get("/api/disability/{disability}")
+async def get_disability(disability: str):
+    if disability not in ["dyslexia", "dysgraphia", "dyscalculia"]:
+        raise HTTPException(status_code=404, detail="Invalid disability")
+    
+    data = load_quiz_file("disability")
+    if data is None:
+        raise HTTPException(status_code=404, detail=f"Fail disability.json tidak dijumpai")
+    return data

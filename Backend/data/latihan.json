@@ -1,0 +1,91 @@
+{
+  "dyslexia": [
+    {
+      "type": "memory-game",
+      "title": "Word Memory Challenge",
+      "instructions": "Match the correct word pairs to improve reading speed.",
+      "content": ["cat", "tac", "dog", "god", "sun", "nus", "book", "koob"]
+    },
+    {
+      "type": "fill-letters",
+      "title": "Fill the Missing Letters",
+      "instructions": "Complete the missing letters in words.",
+      "content": ["_a_t", "_o_g", "_u_n", "_o_o_k", "_s_u_n"]
+    },
+    {
+      "type": "note",
+      "title": "Tips for Dyslexia",
+      "content": [
+        "Use colored overlays to reduce visual stress.",
+        "Read aloud to improve comprehension.",
+        "Break words into syllables.",
+        "Highlight key words in texts.",
+        "Practice reading short passages daily.",
+        "Use audiobooks to support reading.",
+        "Keep a calm, distraction-free environment.",
+        "Encourage repeated reading for fluency."
+      ]
+    }
+  ],
+  "dysgraphia": [
+    {
+      "type": "tracing",
+      "title": "Handwriting Tracing",
+      "instructions": "Trace letters using your mouse/finger to improve writing.",
+      "content": ["A", "B", "C", "D", "E", "F"]
+    },
+    {
+      "type": "order-letters",
+      "title": "Order the Letters",
+      "instructions": "Arrange the letters to form correct words.",
+      "content": ["o-d-g", "c-a-t", "b-o-o-k", "s-u-n"]
+    },
+    {
+      "type": "note",
+      "title": "Tips for Dysgraphia",
+      "content": [
+        "Use lined or graph paper to guide writing.",
+        "Encourage slow and careful writing.",
+        "Use keyboard when possible.",
+        "Practice fine motor exercises.",
+        "Break writing into small steps.",
+        "Give regular breaks during writing tasks.",
+        "Use pencil grips for better control.",
+        "Provide clear examples of correct letters."
+      ]
+    }
+  ],
+  "dyscalculia": [
+    {
+      "type": "number-game",
+      "title": "Number Match",
+      "instructions": "Click numbers to match sums correctly.",
+      "content": [
+        {"question": "2 + 3", "answer": 5},
+        {"question": "4 + 1", "answer": 5},
+        {"question": "6 - 2", "answer": 4},
+        {"question": "3 + 4", "answer": 7}
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "Number Sequence",
+      "instructions": "Fill the missing number in the sequence.",
+      "content": ["1, 2, _, 4, 5", "10, _, 12, 13", "5, _, 7, 8"]
+    },
+    {
+      "type": "note",
+      "title": "Tips for Dyscalculia",
+      "content": [
+        "Use visual aids and counters.",
+        "Break problems into smaller steps.",
+        "Practice real-life math tasks.",
+        "Use color coding for numbers.",
+        "Encourage verbalizing steps.",
+        "Use games to teach counting.",
+        "Relate math to daily activities.",
+        "Provide plenty of repetition and practice."
+      ]
+    }
+  ]
+}

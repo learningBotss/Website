@@ -1,5 +1,82 @@
 [
-  { "id": 12, "question": "Did the students have difficulty recognizing numbers and math symbols?" },
-  { "id": 13, "question": "Did the students have trouble understanding quantity, value or numerical order?" },
-  { "id": 14, "question": "Did the students have poor sense of time, sequencing or estimation?" }
+  {
+    "id": 1,
+    "text": "Does the student have difficulty understanding number concepts?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 2,
+    "text": "Does the student struggle with basic arithmetic operations?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 3,
+    "text": "Does the student have trouble telling time?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 4,
+    "text": "Does the student confuse mathematical symbols (+, -, ×, ÷)?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 5,
+    "text": "Does the student have difficulty with word problems?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 6,
+    "text": "Does the student struggle to remember math facts?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 7,
+    "text": "Does the student have trouble with sequences and patterns?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 8,
+    "text": "Does the student avoid math-related activities?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  }
 ]

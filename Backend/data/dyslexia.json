@@ -1,7 +1,82 @@
 [
-  { "id": 4, "question": "Did the students have trouble understanding?" },
-  { "id": 5, "question": "Did the students have spelling difficulties?" },
-  { "id": 6, "question": "Did the students have difficulty breaking words into sounds?" },
-  { "id": 7, "question": "Did the students have trouble matching letters to the sound they make?" },
-  { "id": 8, "question": "Did the students have poor memory of how words look?" }
+  {
+    "id": 1,
+    "text": "Does the student confuse similar-looking letters (b/d, p/q)?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 2,
+    "text": "Does the student have difficulty reading aloud?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 3,
+    "text": "Does the student skip words or lines when reading?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 4,
+    "text": "Does the student have trouble recognizing common words?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 5,
+    "text": "Does the student struggle to sound out new words?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 6,
+    "text": "Does the student have difficulty with reading comprehension?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 7,
+    "text": "Does the student read very slowly compared to peers?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 8,
+    "text": "Does the student avoid reading activities?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  }
 ]

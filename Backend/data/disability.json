@@ -1,0 +1,59 @@
+{
+  "dyslexia": {
+    "title": "Understanding Dyslexia",
+    "description": "Dyslexia is a learning disorder that involves difficulty reading due to problems identifying speech sounds and learning how they relate to letters and words.",
+    "tips": [
+      "Use multisensory teaching methods (visual, auditory, kinesthetic)",
+      "Break text into smaller, manageable chunks",
+      "Use colored overlays or tinted backgrounds",
+      "Allow extra time for reading tasks",
+      "Use audiobooks alongside written text",
+      "Practice phonemic awareness exercises",
+      "Use fonts designed for dyslexia (OpenDyslexic)",
+      "Encourage reading aloud and repeated reading"
+    ],
+    "resources": [
+      { "title": "Phonics Games", "description": "Interactive games to improve letter-sound recognition" },
+      { "title": "Word Building", "description": "Practice constructing words from syllables" },
+      { "title": "Reading Comprehension", "description": "Strategies for better understanding text" }
+    ]
+  },
+  "dysgraphia": {
+    "title": "Understanding Dysgraphia",
+    "description": "Dysgraphia is a learning disability that affects writing abilities, including handwriting, typing, and spelling.",
+    "tips": [
+      "Use wide-ruled paper and larger pencils",
+      "Allow typing as an alternative to handwriting",
+      "Practice letter formation with different materials",
+      "Use graphic organizers for writing assignments",
+      "Break writing tasks into smaller steps",
+      "Allow verbal responses when appropriate",
+      "Use speech-to-text technology",
+      "Practice fine motor skills exercises"
+    ],
+    "resources": [
+      { "title": "Handwriting Practice", "description": "Structured exercises for letter formation" },
+      { "title": "Typing Skills", "description": "Keyboard training programs" },
+      { "title": "Graphic Organizers", "description": "Templates for organizing written work" }
+    ]
+  },
+  "dyscalculia": {
+    "title": "Understanding Dyscalculia",
+    "description": "Dyscalculia is a learning disability that affects a person's ability to understand numbers and learn math facts.",
+    "tips": [
+      "Use manipulatives (blocks, counters, beads)",
+      "Connect math to real-life situations",
+      "Use visual representations of math concepts",
+      "Break problems into smaller steps",
+      "Allow use of calculators for complex calculations",
+      "Practice estimation skills",
+      "Use games to make math fun",
+      "Create math fact reference sheets"
+    ],
+    "resources": [
+      { "title": "Number Sense Games", "description": "Interactive activities for understanding numbers" },
+      { "title": "Math Manipulatives", "description": "Virtual tools for hands-on learning" },
+      { "title": "Problem-Solving Strategies", "description": "Step-by-step approaches to word problems" }
+    ]
+  }
+}

@@ -1,5 +1,82 @@
 [
-  { "id": 9, "question": "Did the students have awkward posture while writing?" },
-  { "id": 10, "question": "Did the students have difficulty forming letters?" },
-  { "id": 11, "question": "Did the students have difficulty maintaining spacing between words?" }
+  {
+    "id": 1,
+    "text": "Does the student have illegible handwriting?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 2,
+    "text": "Does the student mix uppercase and lowercase letters?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 3,
+    "text": "Does the student have inconsistent spacing between words?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 4,
+    "text": "Does the student complain of hand pain when writing?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 5,
+    "text": "Does the student have trouble organizing thoughts on paper?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 6,
+    "text": "Does the student write very slowly?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 7,
+    "text": "Does the student have difficulty copying from the board?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  },
+  {
+    "id": 8,
+    "text": "Does the student avoid writing tasks?",
+    "options": [
+      { "value": 1, "label": "Never" },
+      { "value": 2, "label": "Sometimes" },
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
+    ]
+  }
 ]
