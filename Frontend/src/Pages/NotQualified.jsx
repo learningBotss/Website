@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 export default function NotQualified() {
   const nav = useNavigate();
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-green-100 p-6">
+    <div className="min-h-screen bg-gradient-hero flex flex-col items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg text-center">
         <h2 className="text-3xl font-bold mb-4">😊 No Significant Learning Difficulties Detected</h2>
         <p className="mb-6">Based on your responses, there are no strong indicators of dyslexia, dysgraphia, or dyscalculia at this time.
