@@ -12,7 +12,7 @@ import DisabilityHub from "./Pages/DisabilityHub";
 import DisabilityTest from "./Pages/DisabilityTest";
 import DisabilityLearn from "./Pages/DisabilityLearn";
 import Auth from "./Pages/Auth";
-import Admin from "./pages/Admin";
+import Admin from "./Pages/Admins";
 import { AuthProvider } from "@/contexts/AuthContext";
 import './index.css';
 // import './custom.css';
@@ -26,13 +26,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
          <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/" element={<Home/>} />
+              <Route path="/auth" element={<Auth/>} />
+              <Route path="/admin" element={<Admin/>} />
               <Route path="/qualification" element={<Qualification/>} />
-              <Route path="/select" element={<SelectDisability />} />
-              <Route path="/disability/:type" element={<DisabilityHub />} />
-              <Route path="/disability/:type/test" element={<DisabilityTest />} />
+              <Route path="/select" element={<SelectDisability/>} />
+              <Route path="/disability/:type" element={<DisabilityHub/>} />
+              <Route path="/disability/:type/test" element={<DisabilityTest/>} />
               <Route path="/disability/:type/learn" element={<DisabilityLearn />} />
             </Routes>
           </BrowserRouter>
