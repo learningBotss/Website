@@ -3,13 +3,13 @@ import { DisabilityCard } from "@/components/DisabilityCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Award, History, RotateCcw, Home as HomeIcon, LogIn } from "lucide-react";
+import { Award, History, RotateCcw, Home as HomeIcon, LogIn, Brain, Sparkles, Heart, ArrowRight, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getPastResults } from "@/api"; // <-- make sure this exists
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, userRole, signOut } = useAuth();
   const qualifyPassed = localStorage.getItem("qualifyPassed") === "true";
   const [pastResults, setPastResults] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
@@ -58,7 +58,24 @@ const getLevelColor = (percentage) => {
   return (
     <div className="min-h-screen bg-gradient-hero px-4 py-8">
       <div className="mx-auto max-w-5xl">
-
+        
+        {/* Header */}
+        <div className="absolute right-4 top-4 z-10 flex gap-2">
+          {user ? (
+            <>
+              {userRole === "admin" && (
+                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                  <Shield className="mr-2 h-4 w-4" /> Admin
+                </Button>
+              )}
+                            <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+              <LogIn className="mr-2 h-4 w-4" /> Login
+            </Button>
+          )}
+        </div>
         {/* Header */}
         <div className="mb-12 text-center">
           {qualifyPassed && (

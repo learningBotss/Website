@@ -4,18 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QuizQuestion from "../components/QuizQuestion.jsx";
 import { ResultDisplay } from "@/components/ResultDisplay";
+import { ArrowLeft, CheckCircle, BookOpen, PenTool, Calculator, FastForward, RotateCcw, Brain, Sparkles, Heart, ArrowRight, LogIn, Shield } from "lucide-react";
 import { getDisabilityQuestions, saveQuizResult, getLatestQuizResult } from "@/api";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle,
-  BookOpen,
-  PenTool,
-  Calculator,
-  FastForward,
-  RotateCcw,
-} from "lucide-react";
+
 
 const icons = {
   dyslexia: BookOpen,
@@ -38,7 +30,7 @@ const colors = {
 const DisabilityTest = () => {
   const { type } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, userRole, signOut } = useAuth();
 
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -183,6 +175,23 @@ const DisabilityTest = () => {
   if (showPreviousPrompt && previousResult) {
     return (
       <div className="min-h-screen bg-gradient-hero px-4 py-8">
+        {/* Header */}
+        <div className="absolute right-4 top-4 z-10 flex gap-2">
+          {user ? (
+            <>
+              {userRole === "admin" && (
+                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                  <Shield className="mr-2 h-4 w-4" /> Admin
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+              <LogIn className="mr-2 h-4 w-4" /> Login
+            </Button>
+          )}
+        </div>
         <div className="mx-auto max-w-lg">
           <Card className="shadow-lg">
             <CardContent className="pt-8 text-center">

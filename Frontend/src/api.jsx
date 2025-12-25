@@ -4,7 +4,7 @@ const api = axios.create({
   baseURL: "http://website-production-5f9b.up.railway.app/api",
 });
 
-//baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`
+//baseURL: "http://website-production-5f9b.up.railway.app/api"
 //baseURL: "http://localhost:8000/api"
 
 // ===== Users / Auth =====

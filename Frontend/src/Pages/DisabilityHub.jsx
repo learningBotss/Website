@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDisability } from "@/api";
-import { BookOpen, PenTool, Calculator, ArrowLeft, FileQuestion, GraduationCap } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { BookOpen, PenTool, Calculator, ArrowLeft, FileQuestion, GraduationCap, Brain, Sparkles, Heart, ArrowRight, LogIn, Shield } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
 
 const icons = {
@@ -21,6 +22,7 @@ const colors = {
 const DisabilityHub = () => {
   const { type } = useParams();
   const navigate = useNavigate();
+  const { user, userRole, signOut } = useAuth();
   const [content, setContent] = useState(null);
 
   useEffect(() => {
@@ -53,6 +55,24 @@ const DisabilityHub = () => {
 
   return (
     <div className={`min-h-screen ${colorScheme.bgLight} px-4 py-8`}>
+      
+        {/* Header */}
+        <div className="absolute right-4 top-4 z-10 flex gap-2">
+          {user ? (
+            <>
+              {userRole === "admin" && (
+                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                  <Shield className="mr-2 h-4 w-4" /> Admin
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+              <LogIn className="mr-2 h-4 w-4" /> Login
+            </Button>
+          )}
+        </div>
       <div className="mx-auto max-w-4xl">
         {/* Back button */}
         <Button variant="ghost" onClick={() => navigate("/select")} className="mb-6">

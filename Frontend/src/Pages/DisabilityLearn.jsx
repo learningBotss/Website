@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDisability } from "@/api";
-import { BookOpen, PenTool, Calculator, ArrowLeft, Lightbulb, BookMarked, CheckCircle, Gamepad2, Trophy } from "lucide-react";
+import { BookOpen, PenTool, Calculator, ArrowLeft, Lightbulb, BookMarked, CheckCircle, Gamepad2, Trophy, Brain, Sparkles, Heart, ArrowRight, LogIn, Shield } from "lucide-react";
+
 import Chatbot from "@/components/Chatbot";
+import { useAuth } from "@/contexts/AuthContext";
 import GameLeaderboard from "@/components/GameLeaderboard";
 import MemoryGame from "@/components/activities/MemoryGame";
 import DragDropGame from "@/components/activities/DragDropGame";
@@ -28,6 +30,7 @@ const colors = {
 const DisabilityLearn = () => {
   const { type } = useParams();
   const navigate = useNavigate();
+  const { user, userRole, signOut } = useAuth();
   const [content, setContent] = useState(null);
 
   useEffect(() => {
@@ -57,6 +60,23 @@ const DisabilityLearn = () => {
 
   return (
     <div className={`min-h-screen ${colorScheme.bgLight} px-4 py-8`}>
+        {/* Header */}
+        <div className="absolute right-4 top-4 z-10 flex gap-2">
+          {user ? (
+            <>
+              {userRole === "admin" && (
+                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                  <Shield className="mr-2 h-4 w-4" /> Admin
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+              <LogIn className="mr-2 h-4 w-4" /> Login
+            </Button>
+          )}
+        </div>
       <div className="mx-auto max-w-4xl">
         {/* Back button */}
         <Button variant="ghost" onClick={() => navigate(`/disability/${type}`)} className="mb-6">

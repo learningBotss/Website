@@ -11,10 +11,8 @@ import SelectDisability from "./Pages/SelectDisability";
 import DisabilityHub from "./Pages/DisabilityHub";
 import DisabilityTest from "./Pages/DisabilityTest";
 import DisabilityLearn from "./Pages/DisabilityLearn";
-import Result from "./Pages/Result";
 import Auth from "./Pages/Auth";
 import Admin from "./pages/Admin";
-import NotQualified from "./Pages/NotQualified";
 import { AuthProvider } from "@/contexts/AuthContext";
 import './index.css';
 // import './custom.css';
@@ -36,8 +34,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="/disability/:type" element={<DisabilityHub />} />
               <Route path="/disability/:type/test" element={<DisabilityTest />} />
               <Route path="/disability/:type/learn" element={<DisabilityLearn />} />
-              <Route path="/result/:level" element={<Result />} />
-              <Route path="/not-qualified" element={<NotQualified />} />
             </Routes>
           </BrowserRouter>
     </TooltipProvider>

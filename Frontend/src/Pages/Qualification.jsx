@@ -4,12 +4,12 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import QuizQuestion from "../components/QuizQuestion.jsx";
 import { getQualificationQuiz, getLatestQuizResult, saveQuizResult } from "../api";
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle, Trophy, RotateCcw, FastForward } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle, Trophy, RotateCcw, FastForward, Brain, Sparkles, Heart, LogIn, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function QualifyQuiz() {
   const navigate = useNavigate();
-  const { user } = useAuth(); // Get user from context
+  const { user, userRole, signOut } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -123,7 +123,24 @@ const handleSkip = () => {
   if (showPreviousPrompt && previousResult) {
     return (
       <div className="min-h-screen bg-gradient-hero px-4 py-8">
-        <div className="mx-auto max-w-lg">
+        {/* Header */}
+        <div className="absolute right-4 top-4 z-10 flex gap-2">
+          {user ? (
+            <>
+              {userRole === "admin" && (
+                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                  <Shield className="mr-2 h-4 w-4" /> Admin
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+              <LogIn className="mr-2 h-4 w-4" /> Login
+            </Button>
+          )}
+        </div>
+        <div className="mx-auto max-w-lg pt-20">
           <Card className="shadow-lg">
             <CardContent className="pt-8 text-center">
               <div
