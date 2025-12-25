@@ -4,8 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QuizQuestion from "../components/QuizQuestion.jsx";
 import { ResultDisplay } from "@/components/ResultDisplay";
-import { getDisabilityQuestions } from "@/api";
-import { ArrowLeft, ArrowRight, CheckCircle, BookOpen, PenTool, Calculator } from "lucide-react";
+import { getDisabilityQuestions, saveQuizResult, getLatestQuizResult } from "@/api";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  BookOpen,
+  PenTool,
+  Calculator,
+  FastForward,
+  RotateCcw,
+} from "lucide-react";
 
 const icons = {
   dyslexia: BookOpen,
@@ -28,105 +38,234 @@ const colors = {
 const DisabilityTest = () => {
   const { type } = useParams();
   const navigate = useNavigate();
-  
+  const { user } = useAuth();
+
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [showResult, setShowResult] = useState(false);
   const [result, setResult] = useState(null);
 
+  // Previous result state
+  const [previousResult, setPreviousResult] = useState(null);
+  const [showPreviousPrompt, setShowPreviousPrompt] = useState(false);
+
+  /* ===== Fetch Questions & Previous Result ===== */
   useEffect(() => {
     if (!type || !["dyslexia", "dysgraphia", "dyscalculia"].includes(type)) {
-      navigate("/disability/:type");
+      navigate("/");
       return;
     }
 
     const fetchQuestions = async () => {
       try {
         const res = await getDisabilityQuestions(type);
-
-        if (res && res.data && Array.isArray(res.data)) {
-          setQuestions(res.data); // <-- use res.data directly
-          setAnswers(new Array(res.data.length).fill(null)); // <-- initialize answers
-        } else {
-          console.warn("No questions found for this type:", type, res);
+        if (Array.isArray(res.data)) {
+          setQuestions(res.data);
+          setAnswers(new Array(res.data.length).fill(null));
         }
       } catch (err) {
         console.error("Failed to fetch questions:", err);
       }
     };
 
-
-
     fetchQuestions();
-  }, [type, navigate]);
 
-  if (!type || !questions || questions.length === 0) {
+    // Fetch previous quiz result
+    if (user?.id) {
+      const fetchPrevious = async () => {
+        try {
+          const latestRes = await getLatestQuizResult(user.id, type);
+          const latest = latestRes?.data; // Make sure we get the actual data
+          if (latest) {
+            const percentage = Number(latest.percentage) || 0;
+            const resultLevel =
+                percentage > 70
+                  ? "high"
+                  : percentage > 40
+                  ? "moderate"
+                  : "low";
+
+            const previous = { ...latest, percentage, result_level: resultLevel };
+            setPreviousResult(previous);
+            setShowPreviousPrompt(true);
+          }
+        } catch (err) {
+          console.error("Failed to fetch previous result:", err);
+        }
+      };
+      fetchPrevious();
+    }
+  }, [type, navigate, user]);
+
+  if (!questions.length) {
     return <p className="text-center mt-8">Loading questions...</p>;
   }
-
 
   const Icon = icons[type];
   const title = titles[type];
   const color = colors[type];
+  const colorScheme = { bg: color, text: color };
 
+  /* ===== Handlers ===== */
   const handleSelect = (value) => {
-    const newAnswers = [...answers];
-    newAnswers[currentQuestion] = value;
-    setAnswers(newAnswers);
+    const updated = [...answers];
+    updated[currentQuestion] = value;
+    setAnswers(updated);
   };
 
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) setCurrentQuestion(currentQuestion + 1);
+    if (currentQuestion < questions.length - 1) setCurrentQuestion((q) => q + 1);
   };
 
   const handlePrevious = () => {
-    if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
+    if (currentQuestion > 0) setCurrentQuestion((q) => q - 1);
   };
 
   const handleSubmit = async () => {
-    const validAnswers = answers.filter(a => a !== null);
-    const totalScore = validAnswers.reduce((sum, val) => sum + val, 0);
-    
+    const totalScore = answers.reduce((sum, val) => sum + val, 0);
+    const maxScore = questions.length * 4;
+    const percentage = (totalScore / maxScore) * 100;
+
     let calculatedResult = "low";
-    if (totalScore / (questions.length * 4) > 0.7) calculatedResult = "high";
-    else if (totalScore / (questions.length * 4) > 0.4) calculatedResult = "moderate";
+    if (percentage > 70) calculatedResult = "high";
+    else if (percentage > 40) calculatedResult = "moderate";
 
     setResult(calculatedResult);
     setShowResult(true);
 
-    
-    // Optional: save locally too
+    // Save locally
     localStorage.setItem(`${type}Score`, totalScore.toString());
     localStorage.setItem(`${type}Result`, calculatedResult);
+
+    // Save to backend if logged in
+    if (user?.id) {
+      try {
+        const payloadAnswers = questions.map((q, index) => ({
+          id: q.id,
+          answer: answers[index],
+        }));
+        await saveQuizResult(user.id, type, payloadAnswers);
+      } catch (err) {
+        console.error("Failed to save quiz result:", err);
+      }
+    }
   };
 
-  const allAnswered = answers.every(a => a !== null);
+  const allAnswered = answers.every((a) => a !== null);
   const maxScore = questions.length * 4;
-  const totalScore = answers.filter(a => a !== null).reduce((sum, val) => sum + val, 0);
+  const totalScore = answers.reduce((sum, val) => sum + val, 0);
 
-  if (showResult && result) {
+  /* ===== Previous Result Prompt ===== */
+  const handleSkip = (prevResult) => {
+    if (!prevResult) return;
+
+    // Map answers according to current quiz questions
+    if (prevResult.answers && questions.length) {
+      const mappedAnswers = questions.map((q) => {
+        const found = prevResult.answers.find((a) => a.id === q.id);
+        return found ? Number(found.answer) : 0;
+      });
+      setAnswers(mappedAnswers);
+    }
+
+    setShowPreviousPrompt(false);
+    setResult(prevResult.result_level);
+    setShowResult(true);
+  };
+
+  const handleRetake = () => {
+    setShowPreviousPrompt(false);
+    setPreviousResult(null);
+  };
+
+  /* ===== Previous Prompt UI ===== */
+  if (showPreviousPrompt && previousResult) {
     return (
       <div className="min-h-screen bg-gradient-hero px-4 py-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-8 text-center">
-            <h1 className={`text-3xl font-bold ${color}`}>{title} Results</h1>
-          </div>
-          <ResultDisplay result={result} disabilityType={type} score={totalScore} maxScore={maxScore} />
+        <div className="mx-auto max-w-lg">
+          <Card className="shadow-lg">
+            <CardContent className="pt-8 text-center">
+              <div
+                className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${colorScheme.bg}/10`}
+              >
+                <Icon className={`h-10 w-10 ${colorScheme.text}`} />
+              </div>
+
+              <h2 className="mb-2 text-2xl font-bold text-foreground">
+                You've taken this quiz before!
+              </h2>
+
+              <p className="mb-6 text-muted-foreground">
+                Your previous result was{" "}
+                <span className="font-semibold capitalize">{previousResult.result_level}</span>.
+                Would you like to skip or retake the assessment?
+              </p>
+
+              <div className="mb-6 rounded-xl bg-muted p-4">
+                <p className="text-sm text-muted-foreground">Previous Score</p>
+                <p className="text-3xl font-bold text-foreground">
+                  {previousResult.percentage.toFixed(1)}/100
+                </p>
+                <p className={`text-sm capitalize ${colorScheme.text}`}>
+                  {previousResult.result_level} Likelihood
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <Button variant="outline" onClick={(e) => { e.stopPropagation();navigate(`/disability/${type}/learn`);}}>
+                  <FastForward className="mr-2 h-4 w-4" />
+                  Skip to Learning
+                </Button>
+                <Button variant={type} onClick={handleRetake}>
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  Retake Assessment
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
   }
 
+  /* ===== Result Page ===== */
+  if (showResult && result) {
+    return (
+      <div className="min-h-screen bg-gradient-hero px-4 py-8">
+        <div className="mx-auto max-w-4xl">
+          <h1 className={`mb-6 text-center text-3xl font-bold ${color}`}>{title} Results</h1>
+
+          <ResultDisplay
+            result={result}
+            disabilityType={type}
+            score={totalScore}
+            maxScore={maxScore}
+          />
+
+          <div className="mt-6 text-center">
+            <Button onClick={() => navigate("/")}>Back to Home</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ===== Quiz Page ===== */
   return (
     <div className="min-h-screen bg-gradient-hero px-4 py-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 text-center">
-          <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-card shadow-md ${color}`}>
+          <div
+            className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-card shadow-md ${color}`}
+          >
             <Icon className="h-8 w-8" />
           </div>
+
           <h1 className={`text-2xl font-bold ${color} md:text-3xl`}>{title}</h1>
-          <p className="mt-2 text-muted-foreground">Answer each question based on your observations</p>
+          <p className="mt-2 text-muted-foreground">
+            Answer each question based on your observations
+          </p>
         </div>
 
         <Card className="shadow-lg">
@@ -136,6 +275,7 @@ const DisabilityTest = () => {
               Screening Questions
             </CardTitle>
           </CardHeader>
+
           <CardContent>
             <QuizQuestion
               question={questions[currentQuestion]}
@@ -146,17 +286,24 @@ const DisabilityTest = () => {
             />
 
             <div className="mt-8 flex justify-between gap-4">
-              <Button variant="outline" onClick={handlePrevious} disabled={currentQuestion === 0}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Previous
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={currentQuestion === 0}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Previous
               </Button>
 
               {currentQuestion === questions.length - 1 ? (
                 <Button variant="hero" onClick={handleSubmit} disabled={!allAnswered}>
-                  View Results <CheckCircle className="ml-2 h-4 w-4" />
+                  View Results
+                  <CheckCircle className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button variant="default" onClick={handleNext} disabled={answers[currentQuestion] === null}>
-                  Next <ArrowRight className="ml-2 h-4 w-4" />
+                <Button onClick={handleNext} disabled={answers[currentQuestion] === null}>
+                  Next
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               )}
             </div>
@@ -166,7 +313,7 @@ const DisabilityTest = () => {
         <div className="mt-6 text-center">
           <Button variant="ghost" onClick={() => navigate(`/disability/${type}`)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to {type.charAt(0).toUpperCase() + type.slice(1)}
+            Back
           </Button>
         </div>
       </div>

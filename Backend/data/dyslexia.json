@@ -2,81 +2,185 @@
   {
     "id": 1,
     "text": "Does the student confuse similar-looking letters (b/d, p/q)?",
+    "quiz_type": "dyslexia",
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never"
+      },
+      {
+        "value": 2,
+        "label": "Sometimes"
+      },
+      {
+        "value": 3,
+        "label": "Often"
+      },
+      {
+        "value": 4,
+        "label": "Always"
+      }
     ]
   },
   {
     "id": 2,
     "text": "Does the student have difficulty reading aloud?",
+    "quiz_type": "dyslexia",
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never"
+      },
+      {
+        "value": 2,
+        "label": "Sometimes"
+      },
+      {
+        "value": 3,
+        "label": "Often"
+      },
+      {
+        "value": 4,
+        "label": "Always"
+      }
     ]
   },
   {
     "id": 3,
     "text": "Does the student skip words or lines when reading?",
+    "quiz_type": "dyslexia",
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never"
+      },
+      {
+        "value": 2,
+        "label": "Sometimes"
+      },
+      {
+        "value": 3,
+        "label": "Often"
+      },
+      {
+        "value": 4,
+        "label": "Always"
+      }
     ]
   },
   {
     "id": 4,
     "text": "Does the student have trouble recognizing common words?",
+    "quiz_type": "dyslexia",
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never"
+      },
+      {
+        "value": 2,
+        "label": "Sometimes"
+      },
+      {
+        "value": 3,
+        "label": "Often"
+      },
+      {
+        "value": 4,
+        "label": "Always"
+      }
     ]
   },
   {
     "id": 5,
     "text": "Does the student struggle to sound out new words?",
+    "quiz_type": "dyslexia",
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never"
+      },
+      {
+        "value": 2,
+        "label": "Sometimes"
+      },
+      {
+        "value": 3,
+        "label": "Often"
+      },
+      {
+        "value": 4,
+        "label": "Always"
+      }
     ]
   },
   {
     "id": 6,
     "text": "Does the student have difficulty with reading comprehension?",
+    "quiz_type": "dyslexia",
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never"
+      },
+      {
+        "value": 2,
+        "label": "Sometimes"
+      },
+      {
+        "value": 3,
+        "label": "Often"
+      },
+      {
+        "value": 4,
+        "label": "Always"
+      }
     ]
   },
   {
     "id": 7,
     "text": "Does the student read very slowly compared to peers?",
+    "quiz_type": "dyslexia",
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never"
+      },
+      {
+        "value": 2,
+        "label": "Sometimes"
+      },
+      {
+        "value": 3,
+        "label": "Often"
+      },
+      {
+        "value": 4,
+        "label": "Always"
+      }
     ]
   },
   {
     "id": 8,
     "text": "Does the student avoid reading activities?",
+    "quiz_type": "dyslexia",
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never"
+      },
+      {
+        "value": 2,
+        "label": "Sometimes"
+      },
+      {
+        "value": 3,
+        "label": "Often"
+      },
+      {
+        "value": 4,
+        "label": "Always"
+      }
     ]
   }
 ]

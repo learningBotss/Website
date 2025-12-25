@@ -1,12 +1,32 @@
-import { Button } from "../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Brain, Sparkles, Heart, ArrowRight } from "lucide-react";
+import { Brain, Sparkles, Heart, ArrowRight, LogIn, Shield } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Start = () => {
   const navigate = useNavigate();
+  const { user, userRole, signOut } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-hero">
+      {/* Header */}
+      <div className="absolute right-4 top-4 z-10 flex gap-2">
+        {user ? (
+          <>
+            {userRole === "admin" && (
+              <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                <Shield className="mr-2 h-4 w-4" /> Admin
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={signOut}>Sign Out</Button>
+          </>
+        ) : (
+          <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+            <LogIn className="mr-2 h-4 w-4" /> Login
+          </Button>
+        )}
+      </div>
+
       {/* Decorative elements */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
@@ -45,25 +65,18 @@ const Start = () => {
             </div>
           </div>
 
-          <Button
-            variant="hero"
-            size="xl"
-            onClick={() => navigate("/qualification")}
-            className="group"
-          >
+          <Button variant="hero" size="xl" onClick={() => navigate("/qualification")} className="group">
             Get Started
             <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Button>
 
           <p className="mt-6 text-sm text-muted-foreground">
-            No account required • Free assessment
+            {user ? `Welcome back, ${user.email}` : "Login to save your progress"}
           </p>
         </div>
 
         <div className="absolute bottom-6 text-center">
-          <p className="text-xs text-muted-foreground">
-            ISP543 Knowledge Based Systems Project
-          </p>
+          <p className="text-xs text-muted-foreground">ISP543 Knowledge Based Systems Project</p>
         </div>
       </div>
     </div>

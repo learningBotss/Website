@@ -2,6 +2,7 @@
   {
     "id": 1,
     "text": "Does the student have difficulty understanding number concepts?",
+    "quiz_type": "dyscalculia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -12,6 +13,7 @@
   {
     "id": 2,
     "text": "Does the student struggle with basic arithmetic operations?",
+    "quiz_type": "dyscalculia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -22,6 +24,7 @@
   {
     "id": 3,
     "text": "Does the student have trouble telling time?",
+    "quiz_type": "dyscalculia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -32,6 +35,7 @@
   {
     "id": 4,
     "text": "Does the student confuse mathematical symbols (+, -, ×, ÷)?",
+    "quiz_type": "dyscalculia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -42,6 +46,7 @@
   {
     "id": 5,
     "text": "Does the student have difficulty with word problems?",
+    "quiz_type": "dyscalculia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -52,6 +57,7 @@
   {
     "id": 6,
     "text": "Does the student struggle to remember math facts?",
+    "quiz_type": "dyscalculia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -62,6 +68,7 @@
   {
     "id": 7,
     "text": "Does the student have trouble with sequences and patterns?",
+    "quiz_type": "dyscalculia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -72,6 +79,7 @@
   {
     "id": 8,
     "text": "Does the student avoid math-related activities?",
+    "quiz_type": "dyscalculia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },

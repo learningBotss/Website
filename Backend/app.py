@@ -1,9 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pathlib import Path
 from pydantic import BaseModel
+from pathlib import Path
 from typing import List
+from datetime import datetime
 import json
+from fastapi import Query
+from typing import Literal, Optional, Any
+import requests
 
 app = FastAPI()
 
@@ -15,15 +19,58 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+OPENROUTER_API_KEY = "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"
 
-# Guna Pathlib: Cari folder 'data' yang berada dalam folder yang sama dengan fail ini
+
+# Folder data
+BASE_PATH = Path(__file__).parent / "data"
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
+DATA_FILE = DATA_DIR / "game_results.json"
 
-# Model untuk data yang dihantar dari Frontend
+
+# ===== Models =====
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class UserRegister(BaseModel):
+    email: str
+    password: str
+    full_name: str
+
+# Full User model with id and role for storage/response
+class User(UserRegister):
+    id: int
+    role: str = "user"
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+    full_name: str
+    role: str
+
 class Answer(BaseModel):
     id: int
     answer: int
+
+class AnswerIn(BaseModel):
+    id: int
+    answer: int
+
+class QuizResultIn(BaseModel):
+    user_id: int
+    type: str
+    answers: List[AnswerIn]
+
+class Question(BaseModel):
+    id: int
+    quiz_type: str
+    text: str
+
+class QuestionIn(BaseModel):
+    quiz_type: str
+    text: str
 
 class QuizSubmission(BaseModel):
     answers: List[Answer]
@@ -32,74 +79,474 @@ class QuizResult(BaseModel):
     probability: str
     percentage: float
 
-def load_quiz_file(name: str):
+class MessageItem(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[MessageItem]
+    disabilityType: str
+# models
+class GameResult(BaseModel):
+    user_id: str
+    disability_type: str
+    activity_type: str
+    score: int
+    attempts: int | None = None
+    completed: bool
+    data: dict
+
+# ===== Helpers =====
+def load_json(name: str):
     file_path = DATA_DIR / f"{name}.json"
-    print(f"Mencari fail di: {file_path}")
     if not file_path.exists():
-        return None
+        return []
     with open(file_path, "r") as f:
         return json.load(f)
 
+def questions_json(filename):
+    path = BASE_PATH / filename
+    print(f"Loading {path}")  # debug
+    if path.exists():
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    print(f"File not found: {filename}")
+    return []
+
+
+def loadQuestion_json(filename: str):
+    path = DATA_DIR / filename
+    if path.exists():
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def saveQuestion_json(filename: str, data):
+    path = DATA_DIR / filename
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+def save_json(name: str, data):
+    file_path = DATA_DIR / f"{name}.json"
+    with open(file_path, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+
 # ===== Routes =====
 
+# --- Users ---
+@app.get("/api/users")
+def get_users():
+    return load_json("users")
+
+@app.post("/api/login", response_model=UserOut)
+def login(user: UserLogin):
+    users = load_json("users")
+    found = next(
+        (u for u in users if u["email"] == user.email and u["password"] == user.password),
+        None
+    )
+
+    if not found:
+        raise HTTPException(status_code=401, detail="Invalid Email or Password")
+
+    return {
+        "id": found["id"],
+        "email": found["email"],
+        "full_name": found["full_name"],
+        "role": found["role"],
+    }
+
+
+@app.post("/api/register", response_model=UserOut)
+def register(user: UserRegister):
+    users = load_json("users")
+
+    if any(u["email"] == user.email for u in users):
+        raise HTTPException(status_code=400, detail="Email already registered")
+      
+    new_id = max([u["id"] for u in users], default=0) + 1
+
+    new_user = {
+        "id": new_id,
+        "email": user.email,
+        "password": user.password,
+        "full_name": user.full_name,
+        "role": "user",
+        "created_at": datetime.now().isoformat()  
+    }
+
+    users.append(new_user)
+    save_json("users", users)
+
+    return {
+        "id": new_id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "role": "user",
+    }
+
+# --- Qualification ---
 @app.get("/api/qualification")
-async def get_qualification():
-    data = load_quiz_file("qualification")
-    if data is None:
-        raise HTTPException(status_code=404, detail="Fail qualification.json tidak dijumpai")
+def get_qualification():
+    data = load_json("qualification")
+    if not data:
+        raise HTTPException(status_code=404, detail="qualification.json not found")
     return data
 
-@app.post("/api/qualification", response_model=QuizResult)
-async def post_qualification(submission: QuizSubmission):
+@app.post("/api/qualification")
+def post_qualification(submission: QuizSubmission, user_id: int):
     answers = submission.answers
     if not answers:
         return {"probability": "Low", "percentage": 0.0}
-    
-    score_map = {1: 1, 2: 2, 3: 3}
 
-    max_score = len(answers) * 3
+    max_score = len(answers) * 4
     total_score = sum(a.answer for a in answers)
     percentage = (total_score / max_score) * 100
-    probability = "High" if percentage >= 80 else "Low"
+    probability = "High" if percentage >= 60 else "Low"
+
+    # Save to quiz_results.json (only latest per user)
+    all_results = load_json("quiz_results")
+    # Remove previous result for user
+    all_results = [r for r in all_results if r["user_id"] != user_id]
+    # Add new result
+    all_results.append({
+        "user_id": user_id,
+        "percentage": percentage,
+        "probability": probability,
+        "answers": [a.dict() for a in answers]
+    })
+    save_json("quiz_results", all_results)
 
     return {"probability": probability, "percentage": percentage}
 
 
-# Contoh lain endpoints tetap sama
+# --- Disability Quiz ---
 @app.get("/api/quiz/{disability}")
-async def get_disability(disability: str):
+def get_quiz(disability: str):
     if disability not in ["dyslexia", "dysgraphia", "dyscalculia"]:
         raise HTTPException(status_code=404, detail="Invalid disability")
-    
-    data = load_quiz_file(disability)
-    if data is None:
+    data = load_json(disability)
+    if not data:
         raise HTTPException(status_code=404, detail=f"{disability}.json not found")
     return data
 
 @app.post("/api/quiz/{disability}")
-async def post_disability(disability: str, submission: QuizSubmission):
+def post_quiz(disability: str, submission: QuizSubmission):
     answers = submission.answers
     if not answers:
         return {"probability": "Low"}
-    
-    score_map = {
-        "Rarely": 1,
-        "Sometimes": 2,
-        "Often": 3
-    }
-    total_score = sum(score_map.get(a.answer, 0) for a in answers)
+    total_score = sum(a.answer for a in answers)
     max_score = len(answers) * 3
     percentage = (total_score / max_score) * 100
     probability = "High" if percentage >= 50 else "Low"
-
     return {"probability": probability, "percentage": percentage}
 
+# --- Disability Info ---
 @app.get("/api/disability/{disability}")
-async def get_disability(disability: str):
-    if disability not in ["dyslexia", "dysgraphia", "dyscalculia"]:
-        raise HTTPException(status_code=404, detail="Invalid disability")
-    
-    data = load_quiz_file("disability")
-    if data is None:
-        raise HTTPException(status_code=404, detail=f"Fail disability.json tidak dijumpai")
+def get_disability_info(disability: str):
+    data = load_json("disability")
+    if not data:
+        raise HTTPException(status_code=404, detail="disability.json not found")
     return data
+
+@app.get("/api/exercise/{disability}")
+def get_latihan(disability: str):
+    data = load_json(f"exercise_{disability}")
+    if not data:
+        raise HTTPException(status_code=404, detail=f"exercise_{disability}.json not found")
+    return data
+
+# --- Quiz Results ---
+
+class QuizSaveSubmission(BaseModel):
+    user_id: int
+    type: str
+    answers: List[Answer]
+
+@app.post("/api/quiz_result")
+def save_quiz_result(payload: QuizResultIn):
+    results = load_json("quiz_results")
+
+    total_score = sum(a.answer for a in payload.answers)
+    max_score = len(payload.answers) * 4
+    percentage = round((total_score / max_score) * 100, 1)
+    passed = percentage >= 60
+
+    new_result = {
+        "quiz_id": len(results) + 1,
+        "user_id": payload.user_id,
+        "type": payload.type,
+        "percentage": percentage,
+        "passed": passed,
+        "answers": [a.dict() for a in payload.answers],
+        "date": datetime.now().isoformat()
+    }
+
+    # overwrite latest result for same user + type
+    results = [
+        r for r in results
+        if not (r["user_id"] == payload.user_id and r["type"] == payload.type)
+    ]
+
+    results.append(new_result)
+    save_json("quiz_results", results)
+
+    return new_result
+
+# --- Past Results ---
+@app.get("/api/quiz_result/history/{user_id}")
+def get_user_history(user_id: int):
+    results = load_json("quiz_results")
+    user_results = [r for r in results if r["user_id"] == user_id]
+    # sort by date descending
+    user_results.sort(key=lambda x: x.get("date", ""), reverse=True)
+    return user_results
+
+
+@app.get("/api/quiz_result/latest")
+def get_latest_result(user_id: int, type: str):
+    results = load_json("quiz_results")
+
+    filtered = [
+        r for r in results
+        if r["user_id"] == user_id and r["type"] == type
+    ]
+
+    if not filtered:
+        return None
+
+    return max(filtered, key=lambda r: r["date"])
+
+# --- Admin: Questions Management ---
+@app.get("/api/Allquestions")
+async def get_all_questions():
+    # Load all quizzes
+    qualify = questions_json("qualify.json")
+    dyslexia = questions_json("dyslexia.json")
+    dysgraphia = questions_json("dysgraphia.json")
+    dyscalculia = questions_json("dyscalculia.json")
+    
+    # Combine all
+    all_questions = qualify + dyslexia + dysgraphia + dyscalculia
+    return all_questions
+
+# --- Create Question ---
+@app.post("/api/createQuestions", response_model=Question)
+def create_question(q: QuestionIn):
+    file_map = {
+        "qualify": "qualification.json",
+        "dyslexia": "dyslexia.json",
+        "dysgraphia": "dysgraphia.json",
+        "dyscalculia": "dyscalculia.json",
+    }
+    filename = file_map.get(q.quiz_type)
+    if not filename:
+        raise HTTPException(status_code=400, detail="Invalid quiz type")
+
+    data = loadQuestion_json(filename)
+    new_id = max([item["id"] for item in data], default=0) + 1
+    new_q = {"id": new_id, "quiz_type": q.quiz_type, "text": q.text}
+    data.append(new_q)
+    saveQuestion_json(filename, data)
+    return new_q
+
+# --- Update Question ---
+@app.put("/api/updateQuestions/{question_id}", response_model=Question)
+def update_question(question_id: int, q: QuestionIn):
+    file_map = {
+        "qualify": "qualify.json",
+        "dyslexia": "dyslexia.json",
+        "dysgraphia": "dysgraphia.json",
+        "dyscalculia": "dyscalculia.json",
+    }
+    # find which file contains this question
+    target_file = None
+    for ft, fname in file_map.items():
+        data = loadQuestion_json(fname)
+        if any(item["id"] == question_id for item in data):
+            target_file = fname
+            break
+    if not target_file:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    data = loadQuestion_json(target_file)
+    for item in data:
+        if item["id"] == question_id:
+            item["text"] = q.text
+            item["quiz_type"] = q.quiz_type
+    saveQuestion_json(target_file, data)
+    return {"id": question_id, "quiz_type": q.quiz_type, "text": q.text}
+
+# --- Delete Question ---
+@app.delete("/api/deleteQuestions/{question_id}")
+def delete_question(question_id: int):
+    file_map = {
+        "qualify": "qualify.json",
+        "dyslexia": "dyslexia.json",
+        "dysgraphia": "dysgraphia.json",
+        "dyscalculia": "dyscalculia.json",
+    }
+    found = False
+    for fname in file_map.values():
+        data = loadQuestion_json(fname)
+        if any(item["id"] == question_id for item in data):
+            data = [item for item in data if item["id"] != question_id]
+            saveQuestion_json(fname, data)
+            found = True
+            break
+    if not found:
+        raise HTTPException(status_code=404, detail="Question not found")
+    return {"detail": "Deleted"}
+
+# --- Admin: get all users ---
+@app.get("/api/allusers")
+def get_all_users():
+    users = load_json("users")
+    # Hanya return public info
+    return [
+        {
+            "id": u["id"],
+            "full_name": u.get("full_name"),
+            "email": u.get("email"),
+            "created_at": u.get("created_at") or datetime.now().isoformat(),
+            "role": u.get("role", "user")
+        }
+        for u in users
+    ]
+
+
+# --- Admin: get all results ---
+@app.get("/api/allresults")
+def get_all_results():
+    results = load_json("quiz_results")
+    # Return as is, but we can enrich if needed
+    return [
+        {
+            "quiz_id": r.get("quiz_id") or r.get("id"),
+            "user_id": r["user_id"],
+            "type": r.get("type", r.get("quiz_type", "unknown")),
+            "percentage": r.get("percentage"),
+            "passed": r.get("passed"),
+            "date": r.get("date") or r.get("created_at"),
+            "answers": r.get("answers", [])
+        }
+        for r in results
+    ]
+
+@app.post("/api/chat/send")
+async def send_message(request: ChatRequest):
+    # Ambil mesej terakhir dan disability context
+    user_content = request.messages[-1].content
+    disability = request.disabilityType
+
+    messages = [
+        {"role": "system", "content": f"The user has {disability}. Provide clear and accessible responses."},
+    ]
+    
+    # Masukkan sejarah perbualan
+    for m in request.messages:
+        messages.append({"role": m.role, "content": m.content})
+
+    try:
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            data=json.dumps({
+                "model": "xiaomi/mimo-v2-flash:free", # Model pilihan kau
+                "messages": messages,
+                "reasoning": {"enabled": True} # Aktifkan reasoning
+            }),
+            timeout=30
+        )
+        
+        response.raise_for_status()
+        data = response.json()
+        
+        # OpenRouter ikut format OpenAI
+        # 'content' adalah jawapan akhir, 'reasoning_details' adalah cara dia berfikir
+        ai_message = data['choices'][0]['message']
+        answer = ai_message.get('content', "No response content")
+        
+        # Kalau kau nak hantar sekali 'reasoning' ke frontend, boleh tambah kat return
+        return {"content": answer}
+
+    except Exception as e:
+        print(f"OpenRouter Error: {str(e)}")
+        return {"content": "Fail to connect with AI. Please try again or server busy right now."}
+
+@app.post("/api/save-progress")
+def save_progress(result: GameResult):
+    # Ensure data folder exists
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Load existing results
+    if DATA_FILE.exists():
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            all_results = json.load(f)
+    else:
+        all_results = []
+
+    # Find or create user entry
+    user_entry = next((u for u in all_results if u["user_id"] == result.user_id), None)
+    if not user_entry:
+        user_entry = {"user_id": result.user_id, "disabilities": {}}
+        all_results.append(user_entry)
+
+    # Find or create disability entry
+    disability_entry = user_entry["disabilities"].get(result.disability_type, {})
+    activity_entry = disability_entry.get(result.activity_type)
+
+    # Compare and keep best score
+    if not activity_entry or result.score > activity_entry["score"]:
+        # Save the new best result
+        new_entry = result.dict()
+        new_entry["date"] = datetime.now().isoformat()
+        disability_entry[result.activity_type] = new_entry
+
+    # Update the user's disability data
+    user_entry["disabilities"][result.disability_type] = disability_entry
+
+    # Save back to file
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(all_results, f, indent=2)
+
+    return {"detail": "Activity saved successfully"}
+
+
+@app.get("/api/leaderboard/{disability}/{activity_type}")
+def get_leaderboard(disability: str, activity_type: str):
+    file_path = DATA_DIR / "game_results.json"
+
+    if not file_path.exists():
+        return []
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        all_users = json.load(f)
+
+    results = []
+    for user in all_users:
+        disabilities = user.get("disabilities", {})
+        activity_data = disabilities.get(disability, {}).get(activity_type)
+        if activity_data:
+            results.append({
+                "user_id": user["user_id"],
+                "full_name": user.get("full_name"),
+                "email": user.get("email"),
+                "score": activity_data.get("score", 0),
+                "date": activity_data.get("date")
+            })
+
+    # sort by score descending
+    results.sort(key=lambda x: x["score"], reverse=True)
+
+    # return top 10
+    return results[:10]
+
+
+
+

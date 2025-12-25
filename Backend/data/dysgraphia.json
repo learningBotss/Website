@@ -2,6 +2,7 @@
   {
     "id": 1,
     "text": "Does the student have illegible handwriting?",
+    "quiz_type": "dysgraphia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -12,6 +13,7 @@
   {
     "id": 2,
     "text": "Does the student mix uppercase and lowercase letters?",
+    "quiz_type": "dysgraphia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -22,6 +24,7 @@
   {
     "id": 3,
     "text": "Does the student have inconsistent spacing between words?",
+    "quiz_type": "dysgraphia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -32,6 +35,7 @@
   {
     "id": 4,
     "text": "Does the student complain of hand pain when writing?",
+    "quiz_type": "dysgraphia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -42,6 +46,7 @@
   {
     "id": 5,
     "text": "Does the student have trouble organizing thoughts on paper?",
+    "quiz_type": "dysgraphia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -52,6 +57,7 @@
   {
     "id": 6,
     "text": "Does the student write very slowly?",
+    "quiz_type": "dysgraphia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -62,6 +68,7 @@
   {
     "id": 7,
     "text": "Does the student have difficulty copying from the board?",
+    "quiz_type": "dysgraphia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
@@ -72,6 +79,7 @@
   {
     "id": 8,
     "text": "Does the student avoid writing tasks?",
+    "quiz_type": "dysgraphia" ,
     "options": [
       { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },

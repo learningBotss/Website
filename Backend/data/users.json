@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "email": "admin@example.com",
+    "full_name": "Admin User",
+    "role": "admin",
+    "password": "admin123",
+    "created_at": "2025-12-22T10:00:00"
+  },
+  {
+    "id": 2,
+    "email": "user@example.com",
+    "full_name": "Normal User",
+    "role": "user",
+    "password": "user123",
+    "created_at": "2025-12-23T10:00:00"
+  },
+  {
+    "id": 3,
+    "email": "arif@gmail.com",
+    "password": "123456",
+    "full_name": "Arif Hilmi",
+    "role": "user",
+    "created_at": "2025-12-23T10:00:00"
+  }
+]

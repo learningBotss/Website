@@ -1,0 +1,81 @@
+[
+  {
+    "user_id": "3",
+    "disabilities": {
+      "dyslexia": {
+        "drag_drop": {
+          "user_id": "3",
+          "disability_type": "dyslexia",
+          "activity_type": "drag_drop",
+          "score": 4,
+          "attempts": null,
+          "completed": true,
+          "data": {
+            "attempts": 4,
+            "totalItems": 4
+          },
+          "date": "2025-12-25T05:15:30.561818"
+        },
+        "memory_game": {
+          "user_id": "3",
+          "disability_type": "dyslexia",
+          "activity_type": "memory_game",
+          "score": 64,
+          "attempts": null,
+          "completed": true,
+          "data": {
+            "moves": 18,
+            "totalPairs": 2
+          },
+          "date": "2025-12-25T05:17:40.453697"
+        },
+        "timed_challenge": {
+          "user_id": "3",
+          "disability_type": "dyslexia",
+          "activity_type": "timed_challenge",
+          "score": 3,
+          "attempts": null,
+          "completed": true,
+          "data": {
+            "timeLeft": 0,
+            "score": 3
+          },
+          "date": "2025-12-25T05:18:38.204369"
+        }
+      }
+    }
+  },
+  {
+    "user_id": "1",
+    "disabilities": {
+      "dyslexia": {
+        "drag_drop": {
+          "user_id": "1",
+          "disability_type": "dyslexia",
+          "activity_type": "drag_drop",
+          "score": 4,
+          "attempts": null,
+          "completed": true,
+          "data": {
+            "attempts": 4,
+            "totalItems": 4
+          },
+          "date": "2025-12-25T14:22:00.758053"
+        },
+        "timed_challenge": {
+          "user_id": "1",
+          "disability_type": "dyslexia",
+          "activity_type": "timed_challenge",
+          "score": 16,
+          "attempts": null,
+          "completed": true,
+          "data": {
+            "timeLeft": 0,
+            "score": 16
+          },
+          "date": "2025-12-25T14:22:55.053913"
+        }
+      }
+    }
+  }
+]

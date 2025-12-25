@@ -2,46 +2,56 @@
   {
     "id": 1,
     "text": "Did the student have slow processing speed?",
+    "quiz_type": "qualify",
     "options": [
-      { "value": 1, "label": "Rarely" },
+      { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" }
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
     ]
   },
   {
     "id": 2,
     "text": "Did the student get easily distracted?",
+    "quiz_type": "qualify",
     "options": [
-      { "value": 1, "label": "Rarely" },
+      { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" }
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
     ]
   },
   {
     "id": 3,
     "text": "Did the student need frequent breaks?",
+    "quiz_type": "qualify",
     "options": [
-      { "value": 1, "label": "Rarely" },
+      { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" }
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
     ]
   },
   {
     "id": 4,
     "text": "Did the student have trouble understanding?",
+    "quiz_type": "qualify",
     "options": [
-      { "value": 1, "label": "Rarely" },
+      { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" }
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
     ]
   },
   {
     "id": 5,
     "text": "Did the student have spelling difficulties?",
+    "quiz_type": "qualify",
     "options": [
-      { "value": 1, "label": "Rarely" },
+      { "value": 1, "label": "Never" },
       { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" }
+      { "value": 3, "label": "Often" },
+      { "value": 4, "label": "Always" }
     ]
   }
 ]

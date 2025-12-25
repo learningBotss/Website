@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDisability } from "@/api";
 import { BookOpen, PenTool, Calculator, ArrowLeft, FileQuestion, GraduationCap } from "lucide-react";
+import Chatbot from "@/components/Chatbot";
 
 const icons = {
   dyslexia: BookOpen,
@@ -104,7 +105,7 @@ const DisabilityHub = () => {
               </div>
               <CardTitle>Learning Resources</CardTitle>
               <CardDescription>
-                {content.learnDescription ?? "Access tips, strategies, and resources to support learning."}
+                Access tips, strategies, interactive activities, and AI chatbot support.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -113,6 +114,7 @@ const DisabilityHub = () => {
               </Button>
             </CardContent>
           </Card>
+
         </div>
 
         {/* Quick Info */}
@@ -134,6 +136,13 @@ const DisabilityHub = () => {
           </Card>
         )}
       </div>
+
+       <Chatbot
+          disabilityType={type} 
+          colorClass={colorScheme.bg}
+        />
+
+
     </div>
   );
 };
