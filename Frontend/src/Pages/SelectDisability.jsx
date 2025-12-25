@@ -77,7 +77,7 @@ const getLevelColor = (percentage) => {
           )}
         </div>
         {/* Header */}
-        <div className="mb-12 text-center">
+        <div className="mb-12 text-center  pt-20">
           {qualifyPassed && (
             <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-success/10 px-4 py-2 text-success">
               <Award className="h-5 w-5" />

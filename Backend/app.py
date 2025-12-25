@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 
 # Folder data

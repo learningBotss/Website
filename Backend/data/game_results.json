@@ -75,6 +75,21 @@
           },
           "date": "2025-12-25T14:22:55.053913"
         }
+      },
+      "dysgraphia": {
+        "memory_game": {
+          "user_id": "1",
+          "disability_type": "dysgraphia",
+          "activity_type": "memory_game",
+          "score": 56,
+          "attempts": null,
+          "completed": true,
+          "data": {
+            "moves": 22,
+            "totalPairs": 2
+          },
+          "date": "2025-12-25T18:02:01.654949"
+        }
       }
     }
   }

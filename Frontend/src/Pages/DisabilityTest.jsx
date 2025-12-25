@@ -192,7 +192,7 @@ const DisabilityTest = () => {
             </Button>
           )}
         </div>
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-lg  pt-20">
           <Card className="shadow-lg">
             <CardContent className="pt-8 text-center">
               <div

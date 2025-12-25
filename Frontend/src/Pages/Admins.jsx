@@ -13,6 +13,14 @@ import { ArrowLeft, Plus, Pencil, Trash2, Users, FileQuestion, Loader2 } from "l
 import { useToast } from "@/hooks/use-toast";
 import { getAllQuestions, createQuestion, updateQuestion, deleteQuestion, getAllUsers, getAllResults } from "../api";
 
+const getLevel = (percentage) => {
+  if (percentage === null || percentage === undefined) return "-";
+  if (percentage >= 70) return "High";
+  if (percentage >= 40) return "Moderate";
+  return "Low";
+};
+
+
 const Admin = () => {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -30,6 +38,7 @@ const Admin = () => {
   useEffect(() => {
     const fetchAll = async () => {
       try {
+        
         const [qData, uData, rData] = await Promise.all([
           getAllQuestions(),
           getAllUsers(),
@@ -293,7 +302,23 @@ const Admin = () => {
                         <TableCell>{users.find(u => u.id === r.user_id)?.full_name || "-"}</TableCell>
                         <TableCell className="capitalize">{r.type || r.quiz_type}</TableCell>
                         <TableCell>{r.percentage ? `${r.percentage}%` : "-"}</TableCell>
-                        <TableCell>{r.passed !== undefined ? (r.passed ? "Pass" : "Fail") : "-"}</TableCell>
+                        <TableCell>
+                            {r.type === "qualification" || r.quiz_type === "qualification" ? (
+                              r.passed !== undefined ? (r.passed ? "Pass" : "Fail") : "-"
+                            ) : (
+                              <span
+                                className={
+                                  getLevel(r.percentage) === "High"
+                                    ? "text-success font-medium"
+                                    : getLevel(r.percentage) === "Moderate"
+                                    ? "text-warning font-medium"
+                                    : "text-destructive font-medium"
+                                }
+                              >
+                                {getLevel(r.percentage)}
+                              </span>
+                            )}
+                          </TableCell>
                         <TableCell>{r.date ? new Date(r.date).toLocaleDateString() : "-"}</TableCell>
                       </TableRow>
                     ))}
