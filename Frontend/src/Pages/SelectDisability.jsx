@@ -3,9 +3,9 @@ import { DisabilityCard } from "@/components/DisabilityCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Award, History, RotateCcw, Home as HomeIcon, LogIn, Brain, Sparkles, Heart, ArrowRight, Shield } from "lucide-react";
+import { Award, History, RotateCcw, Home as HomeIcon, LogIn, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getPastResults } from "@/api"; // <-- make sure this exists
+import { getPastResults } from "@/api"; // <-- API untuk history
 
 const Home = () => {
   const navigate = useNavigate();
@@ -18,34 +18,27 @@ const Home = () => {
     if (user) fetchPastResults();
   }, [user]);
 
-const getLevel = (percentage) => {
-  if (percentage >= 70) return "High";
-  if (percentage >= 40) return "Moderate";
-  return "Low";
-};
-
-const getLevelColor = (percentage) => {
-  if (percentage >= 70) return "text-green-700 bg-green-100";
-  if (percentage >= 40) return "text-yellow-700 bg-yellow-100";
-  return "text-red-700 bg-red-100";
-};
-
-
   const fetchPastResults = async () => {
     if (!user) return;
     try {
       const response = await getPastResults(user.id);
-      const data = response.data; // <- key point
+      const data = response.data;
       if (data) setPastResults(Array.isArray(data) ? data : [data]);
     } catch (err) {
       console.error("Failed to fetch past results", err);
     }
   };
 
-  const getResultColor = (percentage) => {
-    return percentage >= 60
-      ? "text-green-600 bg-green-100"
-      : "text-red-600 bg-red-100";
+  const getLevel = (percentage) => {
+    if (percentage >= 70) return "High";
+    if (percentage >= 40) return "Moderate";
+    return "Low";
+  };
+
+  const getLevelColor = (percentage) => {
+    if (percentage >= 70) return "text-green-700 bg-green-100";
+    if (percentage >= 40) return "text-yellow-700 bg-yellow-100";
+    return "text-red-700 bg-red-100";
   };
 
   const formatDate = (dateString) => {
@@ -54,6 +47,17 @@ const getLevelColor = (percentage) => {
     const dateObj = new Date(cleanDate);
     return isNaN(dateObj) ? "—" : dateObj.toLocaleDateString();
   };
+
+  const secondQualResults = pastResults.filter(r => r.type === "Second Qualification");
+
+  const maxScore = secondQualResults.length > 0 
+  ? Math.max(...secondQualResults.map(r => r.percentage)) 
+  : 0;
+
+  const recommendedDisabilities = secondQualResults
+  .filter(r => r.percentage === maxScore)
+  .map(r => r.type); // type can be "dyslexia", "dysgraphia", etc.
+
 
   return (
     <div className="min-h-screen bg-gradient-hero px-4 py-8">
@@ -68,7 +72,9 @@ const getLevelColor = (percentage) => {
                   <Shield className="mr-2 h-4 w-4" /> Admin
                 </Button>
               )}
-                            <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
+              <Button variant="ghost" size="sm" onClick={() => {signOut(); navigate("/"); }}>
+                Sign Out
+              </Button>
             </>
           ) : (
             <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
@@ -76,8 +82,8 @@ const getLevelColor = (percentage) => {
             </Button>
           )}
         </div>
-        {/* Header */}
-        <div className="mb-12 text-center  pt-20">
+
+        <div className="mb-12 text-center pt-20">
           {qualifyPassed && (
             <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-success/10 px-4 py-2 text-success">
               <Award className="h-5 w-5" />
@@ -128,34 +134,21 @@ const getLevelColor = (percentage) => {
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm">
-                            {result.percentage}%
+                          <span className="text-sm">{result.percentage}%</span>
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
+                              isPassed ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
+                            }`}
+                          >
+                            {isPassed ? "Passed" : "Failed"}
                           </span>
-
-                          {result.type === "qualification" ? (
-                            <span
-                              className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
-                                isPassed ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
-                              }`}
-                            >
-                              {isPassed ? "Passed" : "Failed"}
-                            </span>
-                          ) : (
-                            <span
-                              className={`rounded-full px-3 py-1 text-xs font-medium ${getLevelColor(result.percentage)}`}
-                            >
-                              {getLevel(result.percentage)}
-                            </span>
-                          )}
                         </div>
-
                       </div>
                     );
                   })}
                 </div>
               </CardContent>
             )}
-
           </Card>
         )}
 
@@ -182,35 +175,44 @@ const getLevelColor = (percentage) => {
             type="dyslexia"
             title="Dyslexia"
             description="Reading and language processing difficulties affecting word recognition and comprehension."
+            recommended={recommendedDisabilities.includes("dyslexia")}
             delay={100}
           />
           <DisabilityCard
             type="dysgraphia"
             title="Dysgraphia"
             description="Writing difficulties affecting handwriting, spelling, and organizing thoughts on paper."
+            recommended={recommendedDisabilities.includes("dysgraphia")}
             delay={200}
           />
           <DisabilityCard
             type="dyscalculia"
             title="Dyscalculia"
             description="Mathematical difficulties affecting number sense, calculations, and math reasoning."
+            recommended={recommendedDisabilities.includes("dyscalculia")}
             delay={300}
           />
         </div>
 
-        {/* Actions */}
         <div className="mt-12 flex flex-wrap justify-center gap-4">
-          <Button variant="outline" onClick={() => navigate("/qualification")}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              localStorage.removeItem("qualifyPassed");
+              localStorage.removeItem("qualifyScore");
+              navigate("/qualification", { state: { forceRetake: true } });
+            }}
+          >
             <RotateCcw className="mr-2 h-4 w-4" />
             Retake Qualification
           </Button>
+
           <Button variant="ghost" onClick={() => navigate("/")}>
             <HomeIcon className="mr-2 h-4 w-4" />
             Back to Start
           </Button>
         </div>
 
-        {/* Info */}
         <div className="mt-12 rounded-2xl bg-card p-6 text-center shadow-sm">
           <h3 className="mb-2 font-semibold text-foreground">Important Notice</h3>
           <p className="text-sm text-muted-foreground">

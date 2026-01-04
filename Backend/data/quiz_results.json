@@ -42,45 +42,15 @@
     "date": "2025-12-25T02:11:41.792514"
   },
   {
-    "quiz_id": 3,
-    "user_id": 3,
-    "type": "qualification",
-    "percentage": 35.0,
-    "passed": false,
-    "answers": [
-      {
-        "id": 1,
-        "answer": 1
-      },
-      {
-        "id": 2,
-        "answer": 2
-      },
-      {
-        "id": 3,
-        "answer": 1
-      },
-      {
-        "id": 4,
-        "answer": 2
-      },
-      {
-        "id": 5,
-        "answer": 1
-      }
-    ],
-    "date": "2025-12-25T11:12:14.017443"
-  },
-  {
-    "quiz_id": 3,
+    "quiz_id": 4,
     "user_id": 1,
-    "type": "qualification",
-    "percentage": 75.0,
+    "type": "First Qualification",
+    "percentage": 65.0,
     "passed": true,
     "answers": [
       {
         "id": 1,
-        "answer": 3
+        "answer": 1
       },
       {
         "id": 2,
@@ -99,6 +69,136 @@
         "answer": 3
       }
     ],
-    "date": "2025-12-25T14:17:23.219086"
+    "date": "2026-01-03T13:35:51.227379"
+  },
+  {
+    "quiz_id": 5,
+    "user_id": 1,
+    "type": "Second Qualification",
+    "percentage": 75.0,
+    "passed": true,
+    "answers": [
+      {
+        "id": 1,
+        "answer": 3
+      },
+      {
+        "id": 3,
+        "answer": 2
+      },
+      {
+        "id": 5,
+        "answer": 3
+      },
+      {
+        "id": 2,
+        "answer": 3
+      },
+      {
+        "id": 4,
+        "answer": 4
+      },
+      {
+        "id": 6,
+        "answer": 3
+      },
+      {
+        "id": 1,
+        "answer": 4
+      },
+      {
+        "id": 2,
+        "answer": 3
+      },
+      {
+        "id": 3,
+        "answer": 2
+      },
+      {
+        "id": 4,
+        "answer": 3
+      }
+    ],
+    "date": "2026-01-03T13:36:05.900047"
+  },
+  {
+    "quiz_id": 6,
+    "user_id": 3,
+    "type": "First Qualification",
+    "percentage": 75.0,
+    "passed": true,
+    "answers": [
+      {
+        "id": 1,
+        "answer": 3
+      },
+      {
+        "id": 2,
+        "answer": 4
+      },
+      {
+        "id": 3,
+        "answer": 3
+      },
+      {
+        "id": 4,
+        "answer": 2
+      },
+      {
+        "id": 5,
+        "answer": 3
+      }
+    ],
+    "date": "2026-01-03T17:09:41.945281"
+  },
+  {
+    "quiz_id": 6,
+    "user_id": 3,
+    "type": "Second Qualification",
+    "percentage": 50.0,
+    "passed": true,
+    "answers": [
+      {
+        "id": 1,
+        "answer": 1
+      },
+      {
+        "id": 3,
+        "answer": 3
+      },
+      {
+        "id": 5,
+        "answer": 2
+      },
+      {
+        "id": 2,
+        "answer": 1
+      },
+      {
+        "id": 4,
+        "answer": 2
+      },
+      {
+        "id": 6,
+        "answer": 1
+      },
+      {
+        "id": 1,
+        "answer": 2
+      },
+      {
+        "id": 2,
+        "answer": 1
+      },
+      {
+        "id": 3,
+        "answer": 3
+      },
+      {
+        "id": 4,
+        "answer": 4
+      }
+    ],
+    "date": "2026-01-03T17:11:07.906476"
   }
 ]

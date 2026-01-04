@@ -23,6 +23,13 @@ export const getAllUsers = async () => {
 export const getQualificationQuiz = () => api.get("/qualification");
 export const getDisabilityQuestions = (name) => api.get(`/quiz/${name}`);
 
+// ===== Second Screening =====
+export const getSecondScreening = () => api.get("/second-screening");
+export const saveSecondScreeningConfig = async (payload) => {
+  const res = await api.post("/second-screening", payload);
+  return res.data;
+};
+
 // ===== Disability Info =====
 export const getDisability = (type) => api.get(`/disability/${type}`);
 
@@ -36,10 +43,14 @@ export const getLatestQuizResult = (userId, type) =>
 // ===== Admin: Questions Management =====
 export const getAllQuestions = async () => {const res = await api.get("/Allquestions"); return res.data};
 export const createQuestion = async (data) => (await api.post("/createQuestions", data)).data;
-export const updateQuestion = async (id, data) =>
-  (await api.put(`/updateQuestions/${id}`, data)).data;
-export const deleteQuestion = async (id) =>
-  (await api.delete(`/deleteQuestions/${id}`)).data;
+
+// updateQuestion: hantar id + quiz_type
+export const updateQuestion = async (id, quiz_type, data) =>
+  (await api.post(`/updateQuestions/${id}`, { ...data, quiz_type })).data;
+
+// deleteQuestion: hantar id + quiz_type sebagai query param
+export const deleteQuestion = async (id, quiz_type) =>
+  (await api.delete(`/deleteQuestions/${id}`, { params: { quiz_type } })).data;
 
 
 //Results

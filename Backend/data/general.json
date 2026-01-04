@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "text": "Did the student have slow processing speed?",
+    "quiz_type": "general",
+    "weight": 3,
+    "options": [
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 0.75
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 1.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 2.25
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 3.0
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "text": "Did the student get easily distracted?",
+    "quiz_type": "general",
+    "weight": 5,
+    "options": [
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 1.25
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 2.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 3.75
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 5.0
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "text": "Did the student need frequent breaks?",
+    "quiz_type": "general",
+    "weight": 3,
+    "options": [
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 0.75
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 1.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 2.25
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 3.0
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "text": "Did the student have trouble understanding?",
+    "quiz_type": "general",
+    "weight": 5,
+    "options": [
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 1.25
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 2.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 3.75
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 5.0
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "text": "Did the student have spelling difficulties?",
+    "quiz_type": "general",
+    "weight": 3,
+    "options": [
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 0.75
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 1.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 2.25
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 3.0
+      }
+    ]
+  }
+]

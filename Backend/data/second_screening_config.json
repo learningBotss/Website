@@ -1,0 +1,21 @@
+{
+  "threshold": 50,
+  "questions": {
+    "dyslexia": [
+      1,
+      3,
+      5
+    ],
+    "dysgraphia": [
+      2,
+      4,
+      6
+    ],
+    "dyscalculia": [
+      1,
+      2,
+      4,
+      6
+    ]
+  }
+}

@@ -67,10 +67,14 @@ class Question(BaseModel):
     id: int
     quiz_type: str
     text: str
+    weight: int
+    options: List[dict]  # setiap option ada value, label, score
 
 class QuestionIn(BaseModel):
     quiz_type: str
     text: str
+    weight: Optional[int] = 4
+
 
 class QuizSubmission(BaseModel):
     answers: List[Answer]
@@ -190,9 +194,9 @@ def register(user: UserRegister):
 # --- Qualification ---
 @app.get("/api/qualification")
 def get_qualification():
-    data = load_json("qualification")
+    data = load_json("general")
     if not data:
-        raise HTTPException(status_code=404, detail="qualification.json not found")
+        raise HTTPException(status_code=404, detail="general.json not found")
     return data
 
 @app.post("/api/qualification")
@@ -204,7 +208,7 @@ def post_qualification(submission: QuizSubmission, user_id: int):
     max_score = len(answers) * 4
     total_score = sum(a.answer for a in answers)
     percentage = (total_score / max_score) * 100
-    probability = "High" if percentage >= 60 else "Low"
+    probability = "High" if percentage >= 50 else "Low"
 
     # Save to quiz_results.json (only latest per user)
     all_results = load_json("quiz_results")
@@ -232,16 +236,86 @@ def get_quiz(disability: str):
         raise HTTPException(status_code=404, detail=f"{disability}.json not found")
     return data
 
-@app.post("/api/quiz/{disability}")
-def post_quiz(disability: str, submission: QuizSubmission):
+@app.post("/api/qualification")
+def post_qualification(submission: QuizSubmission, user_id: int):
     answers = submission.answers
     if not answers:
-        return {"probability": "Low"}
-    total_score = sum(a.answer for a in answers)
-    max_score = len(answers) * 3
-    percentage = (total_score / max_score) * 100
+        return {"probability": "Low", "percentage": 0.0}
+
+    # load question set to get weights & option scores
+    quiz_data = load_json("general")  # qualification.json
+    questions = {q["id"]: q for q in quiz_data}
+
+    total_score = 0
+    max_score = 0
+
+    for a in answers:
+        q = questions.get(a.id)
+        if not q:
+            continue
+
+        # max score comes from question weight
+        max_score += q.get("weight", 1)
+
+        # find selected option score
+        selected_option = next(
+            (opt for opt in q.get("options", []) if opt["value"] == a.answer),
+            None
+        )
+        if selected_option:
+            total_score += selected_option.get("score", 0)
+
+    if max_score == 0:
+        percentage = 0.0
+    else:
+        percentage = (total_score / max_score) * 100
+
     probability = "High" if percentage >= 50 else "Low"
-    return {"probability": probability, "percentage": percentage}
+
+    # Save to quiz_results.json (only latest per user)
+    all_results = load_json("quiz_results")
+    all_results = [r for r in all_results if r["user_id"] != user_id]
+
+    all_results.append({
+        "user_id": user_id,
+        "type": "First Qualification",
+        "percentage": round(percentage, 2),
+        "probability": probability,
+        "answers": [a.dict() for a in answers]
+    })
+
+    save_json("quiz_results", all_results)
+
+    return {
+        "probability": probability,
+        "percentage": round(percentage, 2)
+    }
+
+
+#--Second Screening Config--
+@app.get("/api/second-screening")
+def get_second_screening():
+    config = load_json("second_screening_config")
+    result = {}
+
+    for disability, ids in config["questions"].items():
+        all_q = load_json(disability)
+        result[disability] = [q for q in all_q if q["id"] in ids]
+
+    return {
+        "threshold": config["threshold"],
+        "questions": result
+    }
+
+#--- Admin: Update Second Screening Config ---
+@app.post("/api/second-screening")
+def save_second_screening_config(payload: dict):
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    path = DATA_DIR / "second_screening_config.json"
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+    return {"detail": "Second Screening Config updated"}
+
 
 # --- Disability Info ---
 @app.get("/api/disability/{disability}")
@@ -269,10 +343,23 @@ class QuizSaveSubmission(BaseModel):
 def save_quiz_result(payload: QuizResultIn):
     results = load_json("quiz_results")
 
+    threshold_map = {
+        "First Qualification": 50,
+        "Second Qualification": 55,
+        "dyslexia": 60,
+        "dysgraphia": 60,
+        "dyscalculia": 60
+    }
+
     total_score = sum(a.answer for a in payload.answers)
+
     max_score = len(payload.answers) * 4
+
     percentage = round((total_score / max_score) * 100, 1)
-    passed = percentage >= 60
+
+    threshold = threshold_map.get(payload.type, 50)  
+
+    passed = percentage >= threshold
 
     new_result = {
         "quiz_id": len(results) + 1,
@@ -284,7 +371,7 @@ def save_quiz_result(payload: QuizResultIn):
         "date": datetime.now().isoformat()
     }
 
-    # overwrite latest result for same user + type
+    # overwrite latest result untuk same user + type
     results = [
         r for r in results
         if not (r["user_id"] == payload.user_id and r["type"] == payload.type)
@@ -294,6 +381,8 @@ def save_quiz_result(payload: QuizResultIn):
     save_json("quiz_results", results)
 
     return new_result
+
+
 
 # --- Past Results ---
 @app.get("/api/quiz_result/history/{user_id}")
@@ -323,20 +412,20 @@ def get_latest_result(user_id: int, type: str):
 @app.get("/api/Allquestions")
 async def get_all_questions():
     # Load all quizzes
-    qualify = questions_json("qualify.json")
+    general = questions_json("general.json")
     dyslexia = questions_json("dyslexia.json")
     dysgraphia = questions_json("dysgraphia.json")
     dyscalculia = questions_json("dyscalculia.json")
     
     # Combine all
-    all_questions = qualify + dyslexia + dysgraphia + dyscalculia
+    all_questions = general + dyslexia + dysgraphia + dyscalculia
     return all_questions
 
 # --- Create Question ---
 @app.post("/api/createQuestions", response_model=Question)
 def create_question(q: QuestionIn):
     file_map = {
-        "qualify": "qualification.json",
+        "general": "general.json",
         "dyslexia": "dyslexia.json",
         "dysgraphia": "dysgraphia.json",
         "dyscalculia": "dyscalculia.json",
@@ -347,58 +436,58 @@ def create_question(q: QuestionIn):
 
     data = loadQuestion_json(filename)
     new_id = max([item["id"] for item in data], default=0) + 1
-    new_q = {"id": new_id, "quiz_type": q.quiz_type, "text": q.text}
+
+    # auto-bahagi options ikut weight
+    num_options = 4
+    option_labels = ["Never", "Sometimes", "Often", "Always"]
+    options = [
+        {"value": i, "label": label, "score": round(q.weight * i / num_options, 2)}
+        for i, label in enumerate(option_labels, start=1)
+    ]
+
+    new_q = {"id": new_id, "quiz_type": q.quiz_type, "text": q.text, "weight": q.weight, "options": options}
     data.append(new_q)
     saveQuestion_json(filename, data)
     return new_q
 
-# --- Update Question ---
-@app.put("/api/updateQuestions/{question_id}", response_model=Question)
-def update_question(question_id: int, q: QuestionIn):
-    file_map = {
-        "qualify": "qualify.json",
-        "dyslexia": "dyslexia.json",
-        "dysgraphia": "dysgraphia.json",
-        "dyscalculia": "dyscalculia.json",
-    }
-    # find which file contains this question
-    target_file = None
-    for ft, fname in file_map.items():
-        data = loadQuestion_json(fname)
-        if any(item["id"] == question_id for item in data):
-            target_file = fname
-            break
-    if not target_file:
-        raise HTTPException(status_code=404, detail="Question not found")
 
+# --- Update Question ---
+@app.post("/api/updateQuestions/{question_id}", response_model=Question)
+def update_question(question_id: int, q: QuestionIn):
+    target_file = f"{q.quiz_type}.json"  # guna quiz_type terus
     data = loadQuestion_json(target_file)
+
     for item in data:
         if item["id"] == question_id:
             item["text"] = q.text
             item["quiz_type"] = q.quiz_type
-    saveQuestion_json(target_file, data)
-    return {"id": question_id, "quiz_type": q.quiz_type, "text": q.text}
+            item["weight"] = q.weight
+            option_labels = ["Never", "Sometimes", "Often", "Always"]
+            num_options = len(option_labels)
+            item["options"] = [
+                {"value": i, "label": label, "score": round(q.weight * i / num_options, 2)}
+                for i, label in enumerate(option_labels, start=1)
+            ]
+            saveQuestion_json(target_file, data)
+            return {"id": question_id, "quiz_type": q.quiz_type, "text": q.text, "weight": q.weight, "options": item["options"]}
+
+    raise HTTPException(status_code=404, detail="Question not found")
+
+
 
 # --- Delete Question ---
 @app.delete("/api/deleteQuestions/{question_id}")
-def delete_question(question_id: int):
-    file_map = {
-        "qualify": "qualify.json",
-        "dyslexia": "dyslexia.json",
-        "dysgraphia": "dysgraphia.json",
-        "dyscalculia": "dyscalculia.json",
-    }
-    found = False
-    for fname in file_map.values():
-        data = loadQuestion_json(fname)
-        if any(item["id"] == question_id for item in data):
-            data = [item for item in data if item["id"] != question_id]
-            saveQuestion_json(fname, data)
-            found = True
-            break
-    if not found:
+def delete_question(question_id: int, quiz_type: str):  # kena hantar quiz_type
+    target_file = f"{quiz_type}.json"
+    data = loadQuestion_json(target_file)
+    new_data = [item for item in data if item["id"] != question_id]
+    
+    if len(new_data) == len(data):
         raise HTTPException(status_code=404, detail="Question not found")
+
+    saveQuestion_json(target_file, new_data)
     return {"detail": "Deleted"}
+
 
 # --- Admin: get all users ---
 @app.get("/api/allusers")

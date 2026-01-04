@@ -11,6 +11,7 @@ import SelectDisability from "./Pages/SelectDisability";
 import DisabilityHub from "./Pages/DisabilityHub";
 import DisabilityTest from "./Pages/DisabilityTest";
 import DisabilityLearn from "./Pages/DisabilityLearn";
+import SecondScreening from "./Pages/SecondScreening";
 import Auth from "./Pages/Auth";
 import Admin from "./Pages/Admins";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -29,6 +30,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="/" element={<Home/>} />
               <Route path="/auth" element={<Auth/>} />
               <Route path="/admin" element={<Admin/>} />
+              <Route path="/second-screening" element={<SecondScreening />} />
               <Route path="/qualification" element={<Qualification/>} />
               <Route path="/select" element={<SelectDisability/>} />
               <Route path="/disability/:type" element={<DisabilityHub/>} />

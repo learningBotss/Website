@@ -2,89 +2,225 @@
   {
     "id": 1,
     "text": "Does the student have illegible handwriting?",
-    "quiz_type": "dysgraphia" ,
+    "quiz_type": "dysgraphia",
+    "weight": 5,
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 1.25
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 2.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 3.75
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 5.0
+      }
     ]
   },
   {
     "id": 2,
     "text": "Does the student mix uppercase and lowercase letters?",
-    "quiz_type": "dysgraphia" ,
+    "quiz_type": "dysgraphia",
+    "weight": 4,
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 1.0
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 2.0
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 3.0
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 4.0
+      }
     ]
   },
   {
     "id": 3,
     "text": "Does the student have inconsistent spacing between words?",
-    "quiz_type": "dysgraphia" ,
+    "quiz_type": "dysgraphia",
+    "weight": 4,
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 1.0
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 2.0
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 3.0
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 4.0
+      }
     ]
   },
   {
     "id": 4,
     "text": "Does the student complain of hand pain when writing?",
-    "quiz_type": "dysgraphia" ,
+    "quiz_type": "dysgraphia",
+    "weight": 3,
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 0.75
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 1.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 2.25
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 3.0
+      }
     ]
   },
   {
     "id": 5,
     "text": "Does the student have trouble organizing thoughts on paper?",
-    "quiz_type": "dysgraphia" ,
+    "quiz_type": "dysgraphia",
+    "weight": 5,
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 1.25
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 2.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 3.75
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 5.0
+      }
     ]
   },
   {
     "id": 6,
     "text": "Does the student write very slowly?",
-    "quiz_type": "dysgraphia" ,
+    "quiz_type": "dysgraphia",
+    "weight": 4,
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 1.0
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 2.0
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 3.0
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 4.0
+      }
     ]
   },
   {
     "id": 7,
     "text": "Does the student have difficulty copying from the board?",
-    "quiz_type": "dysgraphia" ,
+    "quiz_type": "dysgraphia",
+    "weight": 4,
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 1.0
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 2.0
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 3.0
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 4.0
+      }
     ]
   },
   {
     "id": 8,
     "text": "Does the student avoid writing tasks?",
-    "quiz_type": "dysgraphia" ,
+    "quiz_type": "dysgraphia",
+    "weight": 3,
     "options": [
-      { "value": 1, "label": "Never" },
-      { "value": 2, "label": "Sometimes" },
-      { "value": 3, "label": "Often" },
-      { "value": 4, "label": "Always" }
+      {
+        "value": 1,
+        "label": "Never",
+        "score": 0.75
+      },
+      {
+        "value": 2,
+        "label": "Sometimes",
+        "score": 1.5
+      },
+      {
+        "value": 3,
+        "label": "Often",
+        "score": 2.25
+      },
+      {
+        "value": 4,
+        "label": "Always",
+        "score": 3.0
+      }
     ]
   }
 ]

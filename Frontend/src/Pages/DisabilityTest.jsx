@@ -115,8 +115,17 @@ const DisabilityTest = () => {
   };
 
   const handleSubmit = async () => {
-    const totalScore = answers.reduce((sum, val) => sum + val, 0);
-    const maxScore = questions.length * 4;
+    let totalScore = 0;
+    let maxScore = 0;
+
+    answers.forEach((a, idx) => {
+      const question = questions[idx];
+      const selectedOption = question.options.find((o) => o.value === a);
+      const score = selectedOption ? selectedOption.score : 0;
+      totalScore += score * (question.weight || 1);
+      maxScore += Math.max(...question.options.map((o) => o.score)) * (question.weight || 1);
+    });
+
     const percentage = (totalScore / maxScore) * 100;
 
     let calculatedResult = "low";
@@ -126,11 +135,9 @@ const DisabilityTest = () => {
     setResult(calculatedResult);
     setShowResult(true);
 
-    // Save locally
     localStorage.setItem(`${type}Score`, totalScore.toString());
     localStorage.setItem(`${type}Result`, calculatedResult);
 
-    // Save to backend if logged in
     if (user?.id) {
       try {
         const payloadAnswers = questions.map((q, index) => ({
@@ -143,6 +150,7 @@ const DisabilityTest = () => {
       }
     }
   };
+
 
   const allAnswered = answers.every((a) => a !== null);
   const maxScore = questions.length * 4;
