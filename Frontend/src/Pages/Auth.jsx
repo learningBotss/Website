@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ const passwordSchema = z
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, signIn, signUp, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -36,7 +37,9 @@ const Auth = () => {
 
   /* 🔁 Redirect if logged in */
   useEffect(() => {
-    if (user) navigate("/");
+    if (user) {
+      navigate(-1); // kembali ke page sebelumnya
+    }
   }, [user, navigate]);
 
   /* ================= FORM VALIDATION ================= */
@@ -82,7 +85,7 @@ const Auth = () => {
       description: "You have successfully logged in.",
     });
 
-    navigate("/");
+    navigate("/"); // kembali ke page sebelumnya
   };
 
   /* ================= SIGN UP ================= */
@@ -112,7 +115,7 @@ const Auth = () => {
       description: "Welcome! Your account has been created successfully.",
     });
 
-    navigate("/");
+    navigate("/"); // kembali ke page sebelumnya
   };
 
   /* ================= LOADING STATE ================= */
@@ -128,9 +131,13 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-gradient-hero px-4 py-8 relative">
       <div className="relative mx-auto max-w-md">
-        <Button variant="ghost" onClick={() => navigate("/")} className="mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Start
+          Back
         </Button>
 
         <div className="mb-8 text-center">

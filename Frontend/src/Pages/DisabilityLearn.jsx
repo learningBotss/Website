@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDisability } from "@/api";
-import { BookOpen, PenTool, Calculator, ArrowLeft, Lightbulb, BookMarked, CheckCircle, Gamepad2, Trophy, Brain, Sparkles, Heart, ArrowRight, LogIn, Shield } from "lucide-react";
+import { BookOpen, PenTool, Calculator, ArrowLeft, Lightbulb, BookMarked, CheckCircle, Gamepad2, Trophy, LogIn, Shield } from "lucide-react";
 
 import Chatbot from "@/components/Chatbot";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import GameLeaderboard from "@/components/GameLeaderboard";
 import MemoryGame from "@/components/activities/MemoryGame";
 import DragDropGame from "@/components/activities/DragDropGame";
 import TimedChallenge from "@/components/activities/TimedChallenge";
-
 
 const icons = {
   dyslexia: BookOpen,
@@ -31,8 +31,23 @@ const DisabilityLearn = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const { user, userRole, signOut } = useAuth();
+  const { toast } = useToast();
   const [content, setContent] = useState(null);
 
+  /* ===== Redirect if not logged in ===== */
+  useEffect(() => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "You have to log in first",
+        description: "Redirecting you to Select Disability page",
+      });
+      navigate("/select");
+      return;
+    }
+  }, [user, navigate, toast]);
+
+  /* ===== Fetch disability content ===== */
   useEffect(() => {
     if (!type || !["dyslexia", "dysgraphia", "dyscalculia"].includes(type)) {
       navigate("/select");
@@ -42,7 +57,7 @@ const DisabilityLearn = () => {
     const fetchData = async () => {
       try {
         const res = await getDisability(type);
-        if (res && res.data && res.data[type]) {
+        if (res?.data?.[type]) {
           setContent(res.data[type]);
         }
       } catch (err) {
@@ -60,26 +75,29 @@ const DisabilityLearn = () => {
 
   return (
     <div className={`min-h-screen ${colorScheme.bgLight} px-4 py-8`}>
-        {/* Header */}
-        <div className="absolute right-4 top-4 z-10 flex gap-2">
-          {user ? (
-            <>
-              {userRole === "admin" && (
-                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
-                  <Shield className="mr-2 h-4 w-4" /> Admin
-                </Button>
-              )}
-              <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
-            </>
-          ) : (
-            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
-              <LogIn className="mr-2 h-4 w-4" /> Login
+      {/* Header */}
+      <div className="absolute right-4 top-4 z-10 flex gap-2">
+        {user ? (
+          <>
+            {userRole === "admin" && (
+              <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                <Shield className="mr-2 h-4 w-4" /> Admin
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={() => { signOut(); navigate("/"); }}>
+              <LogIn className="mr-2 h-4 w-4" /> Sign Out
             </Button>
-          )}
-        </div>
+          </>
+        ) : (
+          <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+            <LogIn className="mr-2 h-4 w-4" /> Login
+          </Button>
+        )}
+      </div>
+
       <div className="mx-auto max-w-4xl">
         {/* Back button */}
-        <Button variant="ghost" onClick={() => navigate(`/disability/${type}`)} className="mb-6">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
@@ -97,7 +115,7 @@ const DisabilityLearn = () => {
           </p>
         </div>
 
-        {/* Tabs for Tips, Activities, Leaderboard */}
+        {/* Tabs */}
         <Tabs defaultValue="tips" className="mb-8">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="tips">
@@ -114,18 +132,16 @@ const DisabilityLearn = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Tips Tab */}
+          {/* Tips */}
           <TabsContent value="tips" className="mt-6">
-            {content.tips && content.tips.length > 0 && (
+            {content.tips?.length > 0 && (
               <Card className={`mb-6 ${colorScheme.border} border-2`}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Lightbulb className={`h-5 w-5 ${colorScheme.text}`} />
                     Helpful Tips & Strategies
                   </CardTitle>
-                  <CardDescription>
-                    Evidence-based approaches to support learning
-                  </CardDescription>
+                  <CardDescription>Evidence-based approaches to support learning</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -140,24 +156,19 @@ const DisabilityLearn = () => {
               </Card>
             )}
 
-            {content.resources && content.resources.length > 0 && (
+            {content.resources?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BookMarked className={`h-5 w-5 ${colorScheme.text}`} />
                     Learning Resources
                   </CardTitle>
-                  <CardDescription>
-                    Tools and resources to support skill development
-                  </CardDescription>
+                  <CardDescription>Tools and resources to support skill development</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4 sm:grid-cols-3">
                     {content.resources.map((res, idx) => (
-                      <div
-                        key={idx}
-                        className={`rounded-xl ${colorScheme.bgLight} ${colorScheme.border} border-2 p-4 transition-all hover:shadow-md`}
-                      >
+                      <div key={idx} className={`rounded-xl ${colorScheme.bgLight} ${colorScheme.border} border-2 p-4 transition-all hover:shadow-md`}>
                         <h4 className={`mb-2 font-semibold ${colorScheme.text}`}>{res.title}</h4>
                         <p className="text-sm text-muted-foreground">{res.description}</p>
                       </div>
@@ -168,20 +179,19 @@ const DisabilityLearn = () => {
             )}
           </TabsContent>
 
-          {/* Activities Tab */}
+          {/* Activities */}
           <TabsContent value="activities" className="mt-6 space-y-6">
             <MemoryGame disabilityType={type} colorClass={colorScheme.bg} />
             <DragDropGame disabilityType={type} colorClass={colorScheme.bg} />
             <TimedChallenge disabilityType={type} colorClass={colorScheme.bg} />
           </TabsContent>
 
-          {/* Leaderboard Tab */}
+          {/* Leaderboard */}
           <TabsContent value="leaderboard" className="mt-6">
             <GameLeaderboard disabilityType={type} colorClass={colorScheme.bg} />
           </TabsContent>
         </Tabs>
 
-        {/* Action buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <Button variant={type} onClick={() => navigate(`/disability/${type}/test`)}>
             Take Assessment
@@ -191,21 +201,17 @@ const DisabilityLearn = () => {
           </Button>
         </div>
 
-        {/* Additional info */}
         <Card className="mt-8 bg-card/50">
           <CardContent className="p-6 text-center">
             <h3 className="mb-2 font-semibold text-foreground">Need Professional Support?</h3>
             <p className="text-sm text-muted-foreground">
-              These resources are designed to supplement, not replace, professional evaluation 
-              and intervention. If you suspect a learning disability, consider consulting with 
-              educational specialists, school psychologists, or learning disability specialists 
-              who can provide comprehensive assessment and personalized support plans.
+              These resources are designed to supplement, not replace, professional evaluation and intervention. 
+              If you suspect a learning disability, consider consulting educational specialists for assessment and support.
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* AI Chatbot */}
       <Chatbot disabilityType={type} colorClass={colorScheme.bg} />
     </div>
   );

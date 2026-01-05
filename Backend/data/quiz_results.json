@@ -200,5 +200,85 @@
       }
     ],
     "date": "2026-01-03T17:11:07.906476"
+  },
+  {
+    "quiz_id": 8,
+    "user_id": 4,
+    "type": "First Qualification",
+    "percentage": 95.0,
+    "passed": true,
+    "answers": [
+      {
+        "id": 1,
+        "answer": 4
+      },
+      {
+        "id": 2,
+        "answer": 3
+      },
+      {
+        "id": 3,
+        "answer": 4
+      },
+      {
+        "id": 4,
+        "answer": 4
+      },
+      {
+        "id": 5,
+        "answer": 4
+      }
+    ],
+    "date": "2026-01-05T23:59:05.459308"
+  },
+  {
+    "quiz_id": 8,
+    "user_id": 4,
+    "type": "Second Qualification",
+    "percentage": 47.5,
+    "passed": false,
+    "answers": [
+      {
+        "id": 1,
+        "answer": 4
+      },
+      {
+        "id": 3,
+        "answer": 4
+      },
+      {
+        "id": 5,
+        "answer": 4
+      },
+      {
+        "id": 2,
+        "answer": 1
+      },
+      {
+        "id": 4,
+        "answer": 1
+      },
+      {
+        "id": 6,
+        "answer": 1
+      },
+      {
+        "id": 1,
+        "answer": 1
+      },
+      {
+        "id": 2,
+        "answer": 1
+      },
+      {
+        "id": 4,
+        "answer": 1
+      },
+      {
+        "id": 6,
+        "answer": 1
+      }
+    ],
+    "date": "2026-01-06T00:31:54.779387"
   }
 ]

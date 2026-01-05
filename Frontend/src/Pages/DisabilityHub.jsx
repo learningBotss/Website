@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDisability } from "@/api";
 import { useAuth } from "@/contexts/AuthContext";
-import { BookOpen, PenTool, Calculator, ArrowLeft, FileQuestion, GraduationCap, Brain, Sparkles, Heart, ArrowRight, LogIn, Shield } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { BookOpen, PenTool, Calculator, ArrowLeft, FileQuestion, GraduationCap, LogIn, Shield } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
 
 const icons = {
@@ -23,30 +24,44 @@ const DisabilityHub = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const { user, userRole, signOut } = useAuth();
+  const { toast } = useToast();
   const [content, setContent] = useState(null);
 
+  /* ===== Redirect if not logged in ===== */
   useEffect(() => {
-  if (!type || !["dyslexia", "dysgraphia", "dyscalculia"].includes(type)) {
-    navigate("/select");
-    return;
-  }
-
-  const fetchData = async () => {
-    try {
-      const res = await getDisability(type);
-      if (res && res.data && res.data[type]) {
-        setContent(res.data[type]); 
-      } else {
-        console.warn("No content found for", type);
-      }
-    } catch (err) {
-      console.error("Failed to fetch disability data:", err);
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "You have to log in first",
+        description: "Redirecting to Select Disability page",
+      });
+      navigate("/select");
+      return;
     }
-  };
+  }, [user, navigate, toast]);
 
-  fetchData();
-}, [type, navigate]);
+  /* ===== Fetch disability content ===== */
+  useEffect(() => {
+    if (!type || !["dyslexia", "dysgraphia", "dyscalculia"].includes(type)) {
+      navigate("/select");
+      return;
+    }
 
+    const fetchData = async () => {
+      try {
+        const res = await getDisability(type);
+        if (res?.data?.[type]) {
+          setContent(res.data[type]);
+        } else {
+          console.warn("No content found for", type);
+        }
+      } catch (err) {
+        console.error("Failed to fetch disability data:", err);
+      }
+    };
+
+    fetchData();
+  }, [type, navigate]);
 
   if (!content) return <p className="text-center mt-8">Loading...</p>;
 
@@ -55,24 +70,26 @@ const DisabilityHub = () => {
 
   return (
     <div className={`min-h-screen ${colorScheme.bgLight} px-4 py-8`}>
-      
-        {/* Header */}
-        <div className="absolute right-4 top-4 z-10 flex gap-2">
-          {user ? (
-            <>
-              {userRole === "admin" && (
-                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
-                  <Shield className="mr-2 h-4 w-4" /> Admin
-                </Button>
-              )}
-              <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
-            </>
-          ) : (
-            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
-              <LogIn className="mr-2 h-4 w-4" /> Login
+      {/* Header */}
+      <div className="absolute right-4 top-4 z-10 flex gap-2">
+        {user ? (
+          <>
+            {userRole === "admin" && (
+              <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                <Shield className="mr-2 h-4 w-4" /> Admin
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={() => { signOut(); navigate("/"); }}>
+              <LogIn className="mr-2 h-4 w-4" /> Sign Out
             </Button>
-          )}
-        </div>
+          </>
+        ) : (
+          <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+            <LogIn className="mr-2 h-4 w-4" /> Login
+          </Button>
+        )}
+      </div>
+
       <div className="mx-auto max-w-4xl">
         {/* Back button */}
         <Button variant="ghost" onClick={() => navigate("/select")} className="mb-6">
@@ -134,7 +151,6 @@ const DisabilityHub = () => {
               </Button>
             </CardContent>
           </Card>
-
         </div>
 
         {/* Quick Info */}
@@ -157,12 +173,7 @@ const DisabilityHub = () => {
         )}
       </div>
 
-       <Chatbot
-          disabilityType={type} 
-          colorClass={colorScheme.bg}
-        />
-
-
+      <Chatbot disabilityType={type} colorClass={colorScheme.bg} />
     </div>
   );
 };

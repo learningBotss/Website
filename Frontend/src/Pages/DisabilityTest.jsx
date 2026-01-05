@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QuizQuestion from "../components/QuizQuestion.jsx";
 import { ResultDisplay } from "@/components/ResultDisplay";
-import { ArrowLeft, CheckCircle, BookOpen, PenTool, Calculator, FastForward, RotateCcw, Brain, Sparkles, Heart, ArrowRight, LogIn, Shield } from "lucide-react";
+import { ArrowLeft, CheckCircle, BookOpen, PenTool, Calculator, FastForward, RotateCcw, ArrowRight, LogIn, Shield } from "lucide-react";
 import { getDisabilityQuestions, saveQuizResult, getLatestQuizResult } from "@/api";
 import { useAuth } from "@/contexts/AuthContext";
-
+import { useToast } from "@/hooks/use-toast";
 
 const icons = {
   dyslexia: BookOpen,
@@ -31,6 +31,7 @@ const DisabilityTest = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const { user, userRole, signOut } = useAuth();
+  const { toast } = useToast();
 
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -38,9 +39,21 @@ const DisabilityTest = () => {
   const [showResult, setShowResult] = useState(false);
   const [result, setResult] = useState(null);
 
-  // Previous result state
   const [previousResult, setPreviousResult] = useState(null);
   const [showPreviousPrompt, setShowPreviousPrompt] = useState(false);
+
+  /* ===== Check Login ===== */
+  useEffect(() => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "You have to log in first",
+        description: "Redirecting you to Select Disability page",
+      });
+      navigate("/select");
+      return;
+    }
+  }, [user, navigate, toast]);
 
   /* ===== Fetch Questions & Previous Result ===== */
   useEffect(() => {
@@ -68,15 +81,11 @@ const DisabilityTest = () => {
       const fetchPrevious = async () => {
         try {
           const latestRes = await getLatestQuizResult(user.id, type);
-          const latest = latestRes?.data; // Make sure we get the actual data
+          const latest = latestRes?.data;
           if (latest) {
             const percentage = Number(latest.percentage) || 0;
             const resultLevel =
-                percentage > 70
-                  ? "high"
-                  : percentage > 40
-                  ? "moderate"
-                  : "low";
+              percentage > 70 ? "high" : percentage > 40 ? "moderate" : "low";
 
             const previous = { ...latest, percentage, result_level: resultLevel };
             setPreviousResult(previous);
@@ -90,16 +99,13 @@ const DisabilityTest = () => {
     }
   }, [type, navigate, user]);
 
-  if (!questions.length) {
-    return <p className="text-center mt-8">Loading questions...</p>;
-  }
+  if (!questions.length) return <p className="text-center mt-8">Loading questions...</p>;
 
   const Icon = icons[type];
   const title = titles[type];
   const color = colors[type];
   const colorScheme = { bg: color, text: color };
 
-  /* ===== Handlers ===== */
   const handleSelect = (value) => {
     const updated = [...answers];
     updated[currentQuestion] = value;
@@ -151,16 +157,13 @@ const DisabilityTest = () => {
     }
   };
 
-
   const allAnswered = answers.every((a) => a !== null);
   const maxScore = questions.length * 4;
   const totalScore = answers.reduce((sum, val) => sum + val, 0);
 
-  /* ===== Previous Result Prompt ===== */
   const handleSkip = (prevResult) => {
     if (!prevResult) return;
 
-    // Map answers according to current quiz questions
     if (prevResult.answers && questions.length) {
       const mappedAnswers = questions.map((q) => {
         const found = prevResult.answers.find((a) => a.id === q.id);
@@ -179,11 +182,9 @@ const DisabilityTest = () => {
     setPreviousResult(null);
   };
 
-  /* ===== Previous Prompt UI ===== */
   if (showPreviousPrompt && previousResult) {
     return (
       <div className="min-h-screen bg-gradient-hero px-4 py-8">
-        {/* Header */}
         <div className="absolute right-4 top-4 z-10 flex gap-2">
           {user ? (
             <>
@@ -192,7 +193,7 @@ const DisabilityTest = () => {
                   <Shield className="mr-2 h-4 w-4" /> Admin
                 </Button>
               )}
-              <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/"); }}>Sign Out</Button>
+              <Button variant="ghost" size="sm" onClick={() => {signOut();navigate("/");}}>Sign Out</Button>
             </>
           ) : (
             <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
@@ -200,12 +201,10 @@ const DisabilityTest = () => {
             </Button>
           )}
         </div>
-        <div className="mx-auto max-w-lg  pt-20">
+        <div className="mx-auto max-w-lg pt-20">
           <Card className="shadow-lg">
             <CardContent className="pt-8 text-center">
-              <div
-                className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${colorScheme.bg}/10`}
-              >
+              <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${colorScheme.bg}/10`}>
                 <Icon className={`h-10 w-10 ${colorScheme.text}`} />
               </div>
 
@@ -214,23 +213,18 @@ const DisabilityTest = () => {
               </h2>
 
               <p className="mb-6 text-muted-foreground">
-                Your previous result was{" "}
-                <span className="font-semibold capitalize">{previousResult.result_level}</span>.
+                Your previous result was <span className="font-semibold capitalize">{previousResult.result_level}</span>.
                 Would you like to skip or retake the assessment?
               </p>
 
               <div className="mb-6 rounded-xl bg-muted p-4">
                 <p className="text-sm text-muted-foreground">Previous Score</p>
-                <p className="text-3xl font-bold text-foreground">
-                  {previousResult.percentage.toFixed(1)}/100
-                </p>
-                <p className={`text-sm capitalize ${colorScheme.text}`}>
-                  {previousResult.result_level} Likelihood
-                </p>
+                <p className="text-3xl font-bold text-foreground">{previousResult.percentage.toFixed(1)}/100</p>
+                <p className={`text-sm capitalize ${colorScheme.text}`}>{previousResult.result_level} Likelihood</p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Button variant="outline" onClick={(e) => { e.stopPropagation();navigate(`/disability/${type}/learn`);}}>
+                <Button variant="outline" onClick={() => navigate(`/disability/${type}/learn`)}>
                   <FastForward className="mr-2 h-4 w-4" />
                   Skip to Learning
                 </Button>
@@ -246,7 +240,6 @@ const DisabilityTest = () => {
     );
   }
 
-  /* ===== Result Page ===== */
   if (showResult && result) {
     return (
       <div className="min-h-screen bg-gradient-hero px-4 py-8">
@@ -268,21 +261,16 @@ const DisabilityTest = () => {
     );
   }
 
-  /* ===== Quiz Page ===== */
   return (
     <div className="min-h-screen bg-gradient-hero px-4 py-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 text-center">
-          <div
-            className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-card shadow-md ${color}`}
-          >
+          <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-card shadow-md ${color}`}>
             <Icon className="h-8 w-8" />
           </div>
 
           <h1 className={`text-2xl font-bold ${color} md:text-3xl`}>{title}</h1>
-          <p className="mt-2 text-muted-foreground">
-            Answer each question based on your observations
-          </p>
+          <p className="mt-2 text-muted-foreground">Answer each question based on your observations</p>
         </div>
 
         <Card className="shadow-lg">
@@ -303,11 +291,7 @@ const DisabilityTest = () => {
             />
 
             <div className="mt-8 flex justify-between gap-4">
-              <Button
-                variant="outline"
-                onClick={handlePrevious}
-                disabled={currentQuestion === 0}
-              >
+              <Button variant="outline" onClick={handlePrevious} disabled={currentQuestion === 0}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Previous
               </Button>
@@ -328,7 +312,7 @@ const DisabilityTest = () => {
         </Card>
 
         <div className="mt-6 text-center">
-          <Button variant="ghost" onClick={() => navigate(`/disability/${type}`)}>
+          <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>

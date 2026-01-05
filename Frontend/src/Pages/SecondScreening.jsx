@@ -4,7 +4,7 @@ import { Button } from "../components/ui/button.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.jsx";
 import QuizQuestion from "../components/QuizQuestion.jsx";
 import { getSecondScreening, saveQuizResult, getLatestQuizResult } from "../api.jsx";
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle, Trophy } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function SecondScreening() {
@@ -26,7 +26,6 @@ export default function SecondScreening() {
     const init = async () => {
       setLoading(true);
       try {
-        // Ambik soalan
         const resQuestions = await getSecondScreening();
         const fetchedQuestions = Object.entries(resQuestions.data.questions || {}).flatMap(
           ([type, qs]) => qs.map(q => ({ ...q, disability: type }))
@@ -38,14 +37,12 @@ export default function SecondScreening() {
         const latestRes = await getLatestQuizResult(user.id, "Second Qualification");
 
         if (forceRetake) {
-            // reset jawapan supaya boleh mula baru
             setAnswers(new Array(fetchedQuestions.length).fill(null));
             setCurrentQuestionIndex(0);
             setShowResult(false);
             setPassed(false);
             setDominantDisabilities([]);
-          } else if (latestRes?.data) {
-            // kalau tak forceRetake → terus show result lama
+        } else if (latestRes?.data) {
             const fetchedAnswers = latestRes.data.answers || [];
             setAnswers(fetchedAnswers);
 
@@ -65,12 +62,11 @@ export default function SecondScreening() {
               percentage: Math.round((scoreMap[d] / maxMap[d]) * 100),
             }));
 
-            setDominantDisabilities(displayDisabilities);
-            setPassed(displayDisabilities.some(d => d.percentage >= threshold));
+            const passedAny = displayDisabilities.some(d => d.percentage >= threshold);
+            setDominantDisabilities(displayDisabilities.filter(d => d.percentage >= threshold));
+            setPassed(passedAny);
             setShowResult(true);
-          }
-
-
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -117,7 +113,7 @@ export default function SecondScreening() {
 
     const passedAny = percentages.some(p => p.percentage >= threshold);
     setPassed(passedAny);
-    setDominantDisabilities(percentages.filter(p => p.percentage >= threshold).map(h => h.disability));
+    setDominantDisabilities(percentages.filter(p => p.percentage >= 60).map(h => h.disability)); // 🔹 filter 60%
     setShowResult(true);
 
     if (user) {
@@ -142,10 +138,12 @@ export default function SecondScreening() {
         return acc;
       }, {});
 
-    const displayDisabilities = Object.entries(percentages).map(([d, {score, max}]) => ({
-      disability: d,
-      percentage: Math.round((score / max) * 100),
-    }));
+    const displayDisabilities = Object.entries(percentages)
+      .map(([d, {score, max}]) => ({
+        disability: d,
+        percentage: Math.round((score / max) * 100),
+      }))
+      .filter(d => d.percentage >= 60); // 🔹 hanya tunjuk yg lepas 60%
 
     return (
       <div className="min-h-screen bg-gradient-hero px-4 py-8 flex justify-center">
@@ -155,67 +153,46 @@ export default function SecondScreening() {
               <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${
                 passed ? "bg-success/10" : "bg-destructive/10"
               }`}>
-                {passed ? <Trophy className="h-10 w-10 text-success"/> : <XCircle className="h-10 w-10 text-destructive"/>}
+                {passed ? <CheckCircle  className="h-10 w-10 text-success"/> : <XCircle className="h-10 w-10 text-destructive"/>}
               </div>
 
               <h2 className="mb-4 text-2xl font-bold">
-                {passed ? "Second Qualification Passed" : "Second Qualification Failed"}
+                {passed ? "Assessment Completed" : "Assessment Result"}
               </h2>
 
-              {passed && displayDisabilities.length > 0 && (
+              {displayDisabilities.length > 0 && (
                 <div className="mb-6 rounded-xl bg-muted p-4 space-y-6">
-                  {(() => {
-                    const sorted = [...displayDisabilities]
-                      .filter(d => d.percentage >= threshold)
-                      .sort((a,b) => b.percentage - a.percentage);
-                    const highest = sorted[0];
-                    const others = sorted.slice(1);
-
-                    return (
-                      <>
-                        <div className="p-4 rounded-xl bg-green-50 border-l-4 border-success shadow-md">
-                          <p className="font-semibold text-lg mb-2">🔥 Main Indicator</p>
-                          <p className="mb-2">Based on your answers, you show strong indication of <span className="capitalize font-bold">{highest.disability}</span>.</p>
-                          <div className="w-full h-5 rounded-full bg-gray-200">
-                            <div className="h-5 rounded-full bg-success shadow-lg transition-all duration-1000" style={{width: `${highest.percentage}%`}}/>
-                          </div>
-                          <p className="text-sm mt-1 font-semibold text-success">{highest.percentage}%</p>
-                        </div>
-
-                        {others.length > 0 && (
-                          <div className="mt-4 space-y-3">
-                            <p className="font-semibold">Other indicators:</p>
-                            {others.map(d => (
-                              <div key={d.disability} className="flex flex-col">
-                                <div className="flex justify-between mb-1">
-                                  <span className="capitalize font-medium">{d.disability}</span>
-                                  <span className="font-semibold text-blue-600">{d.percentage}%</span>
-                                </div>
-                                <div className="w-full h-4 rounded-full bg-gray-200">
-                                  <div className="h-4 rounded-full bg-blue-500 shadow transition-all duration-1000" style={{width: `${d.percentage}%`}}/>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </>
-                    );
-                  })()}
+                  {displayDisabilities.map(d => (
+                    <div key={d.disability} className="p-4 rounded-xl bg-green-50 border-l-4 border-success shadow-md">
+                      <p className="font-semibold text-lg mb-2">Result</p>
+                      <p className="mb-2">
+                        Based on your responses, you may have <span className="capitalize font-bold">{d.disability}</span>.
+                      </p>
+                      <div className="w-full h-5 rounded-full bg-gray-200">
+                        <div className="h-5 rounded-full bg-success shadow-lg transition-all duration-1000" style={{width: `${d.percentage}%`}}/>
+                      </div>
+                      <p className="text-sm mt-1 font-semibold text-success">{d.percentage}%</p>
+                    </div>
+                  ))}
                 </div>
               )}
 
-              {!passed && (
-                <div className="mb-6 rounded-xl bg-red-50 p-4">
-                  <p className="text-destructive font-semibold mb-2">You did not pass the second qualification.</p>
-                  <p className="text-sm text-destructive">You can retake from the first or second qualification again to improve your result.</p>
+              {displayDisabilities.length === 0 && (
+                <div className="mb-6 rounded-xl bg-yellow-50 p-4">
+                  <p className="text-yellow-800 font-semibold mb-2">Keep Going!</p>
+                  <p className="text-sm text-yellow-800">
+                    No dominant indicators detected above 60%. Consider reviewing the earlier sections or retaking the assessment to gain more insight.
+                  </p>
                 </div>
               )}
 
               <div className="flex justify-center gap-4 flex-wrap">
-                <Button variant={passed ? "hero" : "destructive"} onClick={() => navigate(passed ? "/select" : "/qualification", {state: {forceRetake: true}})}>
-                  {passed ? "Continue" : "Retake First Qualification"}
+                <Button variant="hero" onClick={() => navigate("/select")}>
+                  Continue
                 </Button>
-                <Button variant="outline" onClick={() => navigate("/second-screening", {state: {forceRetake: true}})}>Retake Second Assessment</Button>
+                <Button variant="outline" onClick={() => navigate("/second-screening", {state: {forceRetake: true}})}>
+                  Retake Assessment
+                </Button>
               </div>
             </CardContent>
           </Card>
