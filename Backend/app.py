@@ -412,7 +412,7 @@ def save_quiz_result(payload: QuizResultIn):
             percentages[dis] = percentage
             passed_map[dis] = percentage >= threshold
 
-        overall_passed = all(passed_map.values())
+        overall_passed = any(passed_map.values())
 
         new_result = {
             "quiz_id": len(results) + 1,
