@@ -35,8 +35,13 @@ export const getDisability = (type) => api.get(`/disability/${type}`);
 
 
 // ===== Quiz Results =====
-export const saveQuizResult = (userId, type, answers) => api.post("/quiz_result", {
-    user_id: userId, type, answers});
+export const saveQuizResult = (userId, type, answers) =>
+  api.post("/quiz_result", {
+    user_id: userId,
+    type,
+    answers,
+  });
+
 export const getLatestQuizResult = (userId, type) =>
   api.get(`/quiz_result/latest?user_id=${userId}&type=${type}`);
 

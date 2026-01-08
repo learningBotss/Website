@@ -1,284 +1,111 @@
 [
   {
     "quiz_id": 1,
-    "user_id": 3,
-    "type": "dyslexia",
-    "percentage": 68.8,
-    "passed": true,
-    "answers": [
-      {
-        "id": 1,
-        "answer": 2
-      },
-      {
-        "id": 2,
-        "answer": 4
-      },
-      {
-        "id": 3,
-        "answer": 3
-      },
-      {
-        "id": 4,
-        "answer": 4
-      },
-      {
-        "id": 5,
-        "answer": 3
-      },
-      {
-        "id": 6,
-        "answer": 2
-      },
-      {
-        "id": 7,
-        "answer": 1
-      },
-      {
-        "id": 8,
-        "answer": 3
-      }
-    ],
-    "date": "2025-12-25T02:11:41.792514"
-  },
-  {
-    "quiz_id": 4,
     "user_id": 1,
     "type": "First Qualification",
-    "percentage": 65.0,
+    "percentage": 75.4,
     "passed": true,
     "answers": [
       {
         "id": 1,
-        "answer": 1
+        "type": "general",
+        "answer": 3.0
       },
       {
         "id": 2,
-        "answer": 2
+        "type": "general",
+        "answer": 3.33
       },
       {
         "id": 3,
-        "answer": 3
+        "type": "general",
+        "answer": 1.0
       },
       {
         "id": 4,
-        "answer": 4
+        "type": "general",
+        "answer": 5.0
       },
       {
         "id": 5,
-        "answer": 3
+        "type": "general",
+        "answer": 2.0
       }
     ],
-    "date": "2026-01-03T13:35:51.227379"
+    "date": "2026-01-08T13:31:33.791369"
   },
   {
-    "quiz_id": 5,
+    "quiz_id": 2,
     "user_id": 1,
     "type": "Second Qualification",
-    "percentage": 75.0,
-    "passed": true,
-    "answers": [
-      {
-        "id": 1,
-        "answer": 3
-      },
-      {
-        "id": 3,
-        "answer": 2
-      },
-      {
-        "id": 5,
-        "answer": 3
-      },
-      {
-        "id": 2,
-        "answer": 3
-      },
-      {
-        "id": 4,
-        "answer": 4
-      },
-      {
-        "id": 6,
-        "answer": 3
-      },
-      {
-        "id": 1,
-        "answer": 4
-      },
-      {
-        "id": 2,
-        "answer": 3
-      },
-      {
-        "id": 3,
-        "answer": 2
-      },
-      {
-        "id": 4,
-        "answer": 3
-      }
-    ],
-    "date": "2026-01-03T13:36:05.900047"
-  },
-  {
-    "quiz_id": 6,
-    "user_id": 3,
-    "type": "First Qualification",
-    "percentage": 75.0,
-    "passed": true,
-    "answers": [
-      {
-        "id": 1,
-        "answer": 3
-      },
-      {
-        "id": 2,
-        "answer": 4
-      },
-      {
-        "id": 3,
-        "answer": 3
-      },
-      {
-        "id": 4,
-        "answer": 2
-      },
-      {
-        "id": 5,
-        "answer": 3
-      }
-    ],
-    "date": "2026-01-03T17:09:41.945281"
-  },
-  {
-    "quiz_id": 6,
-    "user_id": 3,
-    "type": "Second Qualification",
-    "percentage": 50.0,
-    "passed": true,
-    "answers": [
-      {
-        "id": 1,
-        "answer": 1
-      },
-      {
-        "id": 3,
-        "answer": 3
-      },
-      {
-        "id": 5,
-        "answer": 2
-      },
-      {
-        "id": 2,
-        "answer": 1
-      },
-      {
-        "id": 4,
-        "answer": 2
-      },
-      {
-        "id": 6,
-        "answer": 1
-      },
-      {
-        "id": 1,
-        "answer": 2
-      },
-      {
-        "id": 2,
-        "answer": 1
-      },
-      {
-        "id": 3,
-        "answer": 3
-      },
-      {
-        "id": 4,
-        "answer": 4
-      }
-    ],
-    "date": "2026-01-03T17:11:07.906476"
-  },
-  {
-    "quiz_id": 8,
-    "user_id": 4,
-    "type": "First Qualification",
-    "percentage": 95.0,
-    "passed": true,
-    "answers": [
-      {
-        "id": 1,
-        "answer": 4
-      },
-      {
-        "id": 2,
-        "answer": 3
-      },
-      {
-        "id": 3,
-        "answer": 4
-      },
-      {
-        "id": 4,
-        "answer": 4
-      },
-      {
-        "id": 5,
-        "answer": 4
-      }
-    ],
-    "date": "2026-01-05T23:59:05.459308"
-  },
-  {
-    "quiz_id": 8,
-    "user_id": 4,
-    "type": "Second Qualification",
-    "percentage": 47.5,
+    "percentage": {
+      "dyslexia": 66.7,
+      "dysgraphia": 20.8,
+      "dyscalculia": 0.0
+    },
     "passed": false,
     "answers": [
       {
-        "id": 1,
-        "answer": 4
-      },
-      {
-        "id": 3,
-        "answer": 4
-      },
-      {
-        "id": 5,
-        "answer": 4
-      },
-      {
         "id": 2,
-        "answer": 1
+        "type": "dyslexia",
+        "answer": 5.0
       },
       {
         "id": 4,
-        "answer": 1
+        "type": "dyslexia",
+        "answer": 1.67
       },
       {
         "id": 6,
-        "answer": 1
+        "type": "dyslexia",
+        "answer": 3.33
       },
       {
         "id": 1,
-        "answer": 1
+        "type": "dysgraphia",
+        "answer": 3.33
       },
       {
         "id": 2,
-        "answer": 1
+        "type": "dysgraphia",
+        "answer": 0.0
       },
       {
         "id": 4,
-        "answer": 1
+        "type": "dysgraphia",
+        "answer": 0.0
       },
       {
         "id": 6,
-        "answer": 1
+        "type": "dysgraphia",
+        "answer": 0.0
+      },
+      {
+        "id": 1,
+        "type": "dyscalculia",
+        "answer": 0.0
+      },
+      {
+        "id": 2,
+        "type": "dyscalculia",
+        "answer": 0.0
+      },
+      {
+        "id": 4,
+        "type": "dyscalculia",
+        "answer": 0.0
+      },
+      {
+        "id": 6,
+        "type": "dyscalculia",
+        "answer": 0.0
       }
     ],
-    "date": "2026-01-06T00:31:54.779387"
+    "passed_map": {
+      "dyslexia": true,
+      "dysgraphia": false,
+      "dyscalculia": false
+    },
+    "date": "2026-01-08T13:31:50.376321"
   }
 ]

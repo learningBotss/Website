@@ -106,9 +106,9 @@ const DisabilityTest = () => {
   const color = colors[type];
   const colorScheme = { bg: color, text: color };
 
-  const handleSelect = (value) => {
+  const handleSelect = (score) => {
     const updated = [...answers];
-    updated[currentQuestion] = value;
+    updated[currentQuestion] = score;
     setAnswers(updated);
   };
 
@@ -120,45 +120,45 @@ const DisabilityTest = () => {
     if (currentQuestion > 0) setCurrentQuestion((q) => q - 1);
   };
 
-  const handleSubmit = async () => {
-    let totalScore = 0;
-    let maxScore = 0;
+ const handleSubmit = async () => {
+  let totalScore = 0;
+  let maxScore = 0;
 
-    answers.forEach((a, idx) => {
-      const question = questions[idx];
-      const selectedOption = question.options.find((o) => o.value === a);
-      const score = selectedOption ? selectedOption.score : 0;
-      totalScore += score * (question.weight || 1);
-      maxScore += Math.max(...question.options.map((o) => o.score)) * (question.weight || 1);
-    });
+  answers.forEach((score, idx) => {
+    const question = questions[idx];
+    const weight = question.weight || 1;
 
-    const percentage = (totalScore / maxScore) * 100;
+    totalScore += score * weight;
 
-    let calculatedResult = "low";
-    if (percentage > 70) calculatedResult = "high";
-    else if (percentage > 40) calculatedResult = "moderate";
+    const maxOptionScore = Math.max(
+      ...question.options.map((o) => o.score)
+    );
+    maxScore += maxOptionScore * weight;
+  });
 
-    setResult(calculatedResult);
-    setShowResult(true);
+  const percentage = (totalScore / maxScore) * 100;
 
-    localStorage.setItem(`${type}Score`, totalScore.toString());
-    localStorage.setItem(`${type}Result`, calculatedResult);
+  let calculatedResult = "low";
+  if (percentage > 70) calculatedResult = "high";
+  else if (percentage > 40) calculatedResult = "moderate";
 
-    if (user?.id) {
-      try {
-        const payloadAnswers = questions.map((q, index) => ({
-          id: q.id,
-          answer: answers[index],
-        }));
-        await saveQuizResult(user.id, type, payloadAnswers);
-      } catch (err) {
-        console.error("Failed to save quiz result:", err);
-      }
-    }
-  };
+  setResult(calculatedResult);
+  setShowResult(true);
+
+  if (user?.id) {
+    const payloadAnswers = questions.map((q, index) => ({
+      id: q.id,
+      type,
+      answer: answers[index], // 🔥 THIS IS SCORE NOW
+    }));
+
+    await saveQuizResult(user.id, type, payloadAnswers);
+  }
+};
+
 
   const allAnswered = answers.every((a) => a !== null);
-  const maxScore = questions.length * 4;
+ const maxScore = questions.reduce((sum, q) => sum + (q.weight || 1), 0);
   const totalScore = answers.reduce((sum, val) => sum + val, 0);
 
   const handleSkip = (prevResult) => {
@@ -180,6 +180,10 @@ const DisabilityTest = () => {
   const handleRetake = () => {
     setShowPreviousPrompt(false);
     setPreviousResult(null);
+    setAnswers(new Array(questions.length).fill(null));
+    setCurrentQuestion(0);
+    setShowResult(false);
+    setResult(null);
   };
 
   if (showPreviousPrompt && previousResult) {
@@ -251,6 +255,7 @@ const DisabilityTest = () => {
             disabilityType={type}
             score={totalScore}
             maxScore={maxScore}
+            resetQuiz={handleRetake} 
           />
 
           <div className="mt-6 text-center">

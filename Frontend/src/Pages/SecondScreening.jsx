@@ -14,7 +14,7 @@ export default function SecondScreening() {
   const forceRetake = location.state?.forceRetake === true; 
 
   const [loading, setLoading] = useState(true);
-  const [threshold, setThreshold] = useState(50);
+  const [threshold, setThreshold] = useState(60);
   const [allQuestions, setAllQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -83,67 +83,90 @@ export default function SecondScreening() {
       id: allQuestions[currentQuestionIndex].id,
       answer: value,
       disability: allQuestions[currentQuestionIndex].disability,
+      quiz_type: allQuestions[currentQuestionIndex].disability,
     };
     setAnswers(copy);
   };
 
-  const handleSubmit = async () => {
-    if (answers.some(a => a === null)) {
-      alert("Please answer all questions");
-      return;
-    }
+ const handleSubmit = async () => {
+  if (answers.some(a => a === null)) {
+    alert("Please answer all questions");
+    return;
+  }
 
-    const scoreMap = {};
-    const maxMap = {};
+  // Map answers to include score for backend
+  const payloadAnswers = answers.map((a, i) => {
+    const q = allQuestions[i];
+    const opt = q.options.find(o => o.score === a.answer);
+    const score = opt?.score ?? 0;
 
-    answers.forEach((a, i) => {
-      const q = allQuestions[i];
-      if (!q) return;
-      const opt = q.options?.find(o => o.value === a.answer);
-      const score = opt?.score || 0;
-      const weight = q.weight || 1;
-      scoreMap[q.disability] = (scoreMap[q.disability] || 0) + score;
-      maxMap[q.disability] = (maxMap[q.disability] || 0) + weight;
-    });
+    return {
+      id: a.id,
+      answer: score,      
+      disability: a.disability,
+      quiz_type: a.quiz_type,
+      type: a.disability,
+    };
+  });
 
-    const percentages = Object.keys(scoreMap).map(d => ({
-      disability: d,
-      percentage: Math.round((scoreMap[d] / maxMap[d]) * 100),
-    }));
+  // Calculate scores safely
+  const scoreMap = {};
+  const maxMap = {};
 
-    const passedAny = percentages.some(p => p.percentage >= threshold);
-    setPassed(passedAny);
-    setDominantDisabilities(percentages.filter(p => p.percentage >= 60).map(h => h.disability)); // 🔹 filter 60%
-    setShowResult(true);
+  payloadAnswers.forEach(a => {
+    const q = allQuestions.find(q => q.id === a.id && q.disability === a.disability);
+    if (!q) return;
 
-    if (user) {
-      await saveQuizResult(user.id, "Second Qualification", answers);
-    }
-  };
+    const maxScore = Math.max(...q.options.map(o => o.score));
+
+    scoreMap[a.disability] = (scoreMap[a.disability] || 0) + a.answer;
+    maxMap[a.disability] = (maxMap[a.disability] || 0) + maxScore;
+  });
+
+  const percentages = Object.keys(scoreMap).map(d => ({
+    disability: d,
+    percentage: Math.round((scoreMap[d] / maxMap[d]) * 100),
+  }));
+
+  const passedAny = percentages.some(p => p.percentage >= threshold);
+  setPassed(passedAny);
+  setDominantDisabilities(percentages.filter(p => p.percentage >= threshold).map(h => h.disability)); 
+
+  setShowResult(true);
+
+  if (user) {
+    await saveQuizResult(user.id, "Second Qualification", payloadAnswers);
+  }
+};
+
+
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   // ===================== RESULT SCREEN =====================
   if (showResult) {
-    const percentages = allQuestions
-      .reduce((acc, q, i) => {
-        const ans = answers[i];
-        if (!ans) return acc;
-        const opt = q.options?.find(o => o.value === ans.answer);
-        const score = opt?.score || 0;
-        const weight = q.weight || 1;
-        if (!acc[q.disability]) acc[q.disability] = { score: 0, max: 0 };
-        acc[q.disability].score += score;
-        acc[q.disability].max += weight;
-        return acc;
-      }, {});
+  const percentages = allQuestions.reduce((acc, q, i) => {
+    const ans = answers[i];
+    if (!ans) return acc;
+    const score = ans.answer;      // already score
+    const weight = q.weight || 1;
 
-    const displayDisabilities = Object.entries(percentages)
-      .map(([d, {score, max}]) => ({
-        disability: d,
-        percentage: Math.round((score / max) * 100),
-      }))
-      .filter(d => d.percentage >= 60); // 🔹 hanya tunjuk yg lepas 60%
+    if (!acc[q.disability]) acc[q.disability] = { score: 0, max: 0 };
+    acc[q.disability].score += score;
+    acc[q.disability].max += weight;
+    return acc;
+  }, {});
+
+  // local variables only
+  const displayDisabilities = Object.entries(percentages)
+    .map(([d, {score, max}]) => ({
+      disability: d,
+      percentage: Math.round((score / max) * 100),
+    }))
+    .filter(d => d.percentage >= threshold);
+
+  const passedAny = displayDisabilities.length > 0;
+
 
     return (
       <div className="min-h-screen bg-gradient-hero px-4 py-8 flex justify-center">
@@ -187,13 +210,28 @@ export default function SecondScreening() {
               )}
 
               <div className="flex justify-center gap-4 flex-wrap">
-                <Button variant="hero" onClick={() => navigate("/select")}>
-                  Continue
-                </Button>
-                <Button variant="outline" onClick={() => navigate("/second-screening", {state: {forceRetake: true}})}>
+                {passed && (
+                  <Button variant="hero" onClick={() => navigate("/select")}>
+                    Continue
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    // Clear state and force retake
+                    setAnswers([]);
+                    setCurrentQuestionIndex(0);
+                    setShowResult(false);
+                    setPassed(false);
+                    setDominantDisabilities([]);
+                    navigate("/second-screening", { state: { forceRetake: true }, replace: true });
+                  }}
+                >
                   Retake Assessment
                 </Button>
               </div>
+
+
             </CardContent>
           </Card>
 

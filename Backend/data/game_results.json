@@ -74,6 +74,19 @@
             "score": 16
           },
           "date": "2025-12-25T14:22:55.053913"
+        },
+        "memory_game": {
+          "user_id": "1",
+          "disability_type": "dyslexia",
+          "activity_type": "memory_game",
+          "score": 68,
+          "attempts": null,
+          "completed": true,
+          "data": {
+            "moves": 16,
+            "totalPairs": 2
+          },
+          "date": "2026-01-08T11:39:33.889811"
         }
       },
       "dysgraphia": {

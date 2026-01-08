@@ -8,17 +8,17 @@
       {
         "value": 1,
         "label": "Never",
-        "score": 0.75
+        "score": 0
       },
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 1.5
+        "score": 1.0
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 2.25
+        "score": 2.0
       },
       {
         "value": 4,
@@ -36,17 +36,17 @@
       {
         "value": 1,
         "label": "Never",
-        "score": 1.25
+        "score": 0
       },
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 2.5
+        "score": 1.67
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 3.75
+        "score": 3.33
       },
       {
         "value": 4,
@@ -64,17 +64,17 @@
       {
         "value": 1,
         "label": "Never",
-        "score": 1.0
+        "score": 0
       },
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 2.0
+        "score": 1.33
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 3.0
+        "score": 2.67
       },
       {
         "value": 4,
@@ -92,17 +92,17 @@
       {
         "value": 1,
         "label": "Never",
-        "score": 1.25
+        "score": 0
       },
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 2.5
+        "score": 1.67
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 3.75
+        "score": 3.33
       },
       {
         "value": 4,
@@ -120,17 +120,17 @@
       {
         "value": 1,
         "label": "Never",
-        "score": 1.0
+        "score": 0
       },
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 2.0
+        "score": 1.33
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 3.0
+        "score": 2.67
       },
       {
         "value": 4,
@@ -148,17 +148,17 @@
       {
         "value": 1,
         "label": "Never",
-        "score": 1.25
+        "score": 0
       },
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 2.5
+        "score": 1.67
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 3.75
+        "score": 3.33
       },
       {
         "value": 4,
@@ -176,17 +176,17 @@
       {
         "value": 1,
         "label": "Never",
-        "score": 0.75
+        "score": 0
       },
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 1.5
+        "score": 1.0
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 2.25
+        "score": 2.0
       },
       {
         "value": 4,
@@ -204,17 +204,17 @@
       {
         "value": 1,
         "label": "Never",
-        "score": 0.5
+        "score": 0
       },
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 1.0
+        "score": 0.67
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 1.5
+        "score": 1.33
       },
       {
         "value": 4,

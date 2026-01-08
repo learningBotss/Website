@@ -11,12 +11,17 @@ const Home = () => {
   const navigate = useNavigate();
   const { user, userRole, signOut } = useAuth();
   const qualifyPassed = localStorage.getItem("qualifyPassed") === "true";
-  const [pastResults, setPastResults] = useState([]);
+  const [pastResults, setPastResults] = useState([]); 
   const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     if (user) fetchPastResults();
-  }, [user]);
+    if (showHistory) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [user, showHistory]);
 
   const fetchPastResults = async () => {
     if (!user) return;
@@ -48,15 +53,16 @@ const Home = () => {
     return isNaN(dateObj) ? "—" : dateObj.toLocaleDateString();
   };
 
-  const secondQualResults = pastResults.filter(r => r.type === "Second Qualification");
+const secondQualResults = pastResults.filter(r => r.type === "Second Qualification");
 
-  const maxScore = secondQualResults.length > 0 
-  ? Math.max(...secondQualResults.map(r => r.percentage)) 
-  : 0;
+// get the latest result (by date)
+const latestResult = secondQualResults.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 
-  const recommendedDisabilities = secondQualResults
-  .filter(r => r.percentage === maxScore)
-  .map(r => r.type); // type can be "dyslexia", "dysgraphia", etc.
+const recommendedDisabilities = latestResult
+  ? Object.entries(latestResult.percentage)
+      .filter(([_, pct]) => pct >= 60)
+      .map(([type, _]) => type)
+  : [];
 
 
   return (
@@ -104,52 +110,144 @@ const Home = () => {
             </p>
           )}
         </div>
-
-        {/* User Past Results */}
         {user && pastResults.length > 0 && (
-          <Card className="mb-8">
+          <div className="flex justify-center mb-6">
+            <Button variant="outline" onClick={() => setShowHistory(true)}>
+              <History className="mr-2 h-4 w-4" />
+              View Assessment History
+            </Button>
+          </div>
+        )}
+        {/* User Past Results */}
+        {user && pastResults.length > 0 && showHistory && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex justify-center items-start pt-24">
+          <Card className="w-full max-w-3xl mx-4 shadow-xl">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <History className="h-5 w-5" />
                 Your Assessment History
               </CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
-                {showHistory ? "Hide" : "Show"} ({pastResults.length})
+              <Button variant="ghost" size="sm" onClick={() => setShowHistory(false)}>
+                Close
               </Button>
             </CardHeader>
-            {showHistory && (
+           
               <CardContent>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {pastResults.map((result) => {
-                    const isPassed = result.passed === true || result.passed === "true";
+                    /* ================= FIRST QUALIFICATION ================= */
+                    if (result.type === "First Qualification") {
+                      const passed = result.percentage >= 50;
+
+                      return (
+                        <div
+                          key={result.quiz_id}
+                          className="flex flex-col gap-2 rounded-lg bg-muted/50 p-3" // Tukar kepada flex-col
+                        >
+                          {/* Baris Atas: Tajuk & Tarikh */}
+                          <div className="flex justify-between items-center w-full">
+                            <span className="font-medium">{result.type}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatDate(result.date)}
+                            </span>
+                          </div>
+
+                          {/* Baris Bawah: Status Badge */}
+                          <div className="flex">
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                passed
+                                  ? "text-green-700 bg-green-100"
+                                  : "text-red-700 bg-red-100"
+                              }`}
+                            >
+                              {passed ? "Passed" : "Failed"}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    /* ================= SECOND QUALIFICATION ================= */
+                    if (result.type === "Second Qualification") {
+                      return (
+                        <div
+                          key={result.quiz_id}
+                          className="flex flex-col gap-2 rounded-lg bg-muted/50 p-3"
+                        >
+                          <div className="flex justify-between">
+                            <span className="font-medium">{result.type}</span>
+                            <span className="text-sm text-muted-foreground">
+                              {formatDate(result.date)}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap gap-3">
+                            {Object.entries(result.percentage).map(([type, pct]) => {
+                              const detected = pct >= 60;
+                              return (
+                                <span
+                                  key={type}
+                                  className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
+                                    detected
+                                      ? "text-green-700 bg-green-100"
+                                      : "text-gray-600 bg-gray-100"
+                                  }`}
+                                >
+                                  {type}: {Math.round(pct)}% —{" "}
+                                  {detected ? "Detected" : "Not Detected"}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    /* ================= OTHER ASSESSMENTS ================= */
+                    const percentage = result.percentage;
+                    let level = "Low";
+                    let color = "text-red-700 bg-red-100";
+
+                    if (percentage >= 70) {
+                      level = "High";
+                      color = "text-green-700 bg-green-100";
+                    } else if (percentage >= 40) {
+                      level = "Moderate";
+                      color = "text-yellow-700 bg-yellow-100";
+                    }
+
                     return (
                       <div
                         key={result.quiz_id}
-                        className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                        className="flex flex-col gap-2 rounded-lg bg-muted/50 p-3" // Tukar flex-items-center justify-between kepada flex-col
                       >
-                        <div>
+                        {/* Baris Atas: Tajuk & Tarikh */}
+                        <div className="flex justify-between items-center w-full">
                           <span className="font-medium capitalize">{result.type}</span>
-                          <span className="ml-2 text-sm text-muted-foreground">
+                          <span className="text-xs text-muted-foreground">
                             {formatDate(result.date)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm">{result.percentage}%</span>
+                        
+                        {/* Baris Bawah: Percentage Badge */}
+                        <div className="flex">
                           <span
-                            className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
-                              isPassed ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
-                            }`}
+                            className={`rounded-full px-3 py-1 text-xs font-medium ${color}`}
                           >
-                            {isPassed ? "Passed" : "Failed"}
+                            {Math.round(percentage)}% — {level}
                           </span>
                         </div>
                       </div>
                     );
                   })}
+
+
                 </div>
               </CardContent>
-            )}
           </Card>
+          
+          </div> 
         )}
 
         {!user && (

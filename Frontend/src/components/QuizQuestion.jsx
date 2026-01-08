@@ -26,10 +26,10 @@ export default function QuizQuestion({ question, selectedAnswer, onSelect, quest
     {question.options.map((option) => (
       <button
         key={option.value}
-        onClick={() => onSelect(option.value)}
+        onClick={() => onSelect(option.score)}
         className={cn(
           "w-full rounded-xl border-2 p-4 text-left font-medium transition-all duration-300",
-          selectedAnswer === option.value
+          selectedAnswer === option.score
             ? "border-primary bg-primary/10 text-primary shadow-md"
             : "border-border bg-card hover:border-primary/50 hover:bg-muted"
         )}
@@ -38,7 +38,7 @@ export default function QuizQuestion({ question, selectedAnswer, onSelect, quest
           <span
             className={cn(
               "flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold transition-all",
-              selectedAnswer === option.value
+              selectedAnswer === option.score
                 ? "border-primary bg-primary text-primary-foreground"
                 : "border-muted-foreground/30"
             )}

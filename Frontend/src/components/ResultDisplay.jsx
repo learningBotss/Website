@@ -33,11 +33,20 @@ const resultConfig = {
   },
 };
 
-export const ResultDisplay = ({ result, disabilityType, score, maxScore }) => {
+export const ResultDisplay = ({ result, disabilityType, score, maxScore, resetQuiz }) => {
   const navigate = useNavigate();
   const config = resultConfig[result];
   const Icon = config.icon;
   const percentage = Math.round((score / maxScore) * 100);
+
+const handleRetake = () => {
+  setShowPreviousPrompt(false);
+  setPreviousResult(null);
+  setAnswers(new Array(questions.length).fill(null));
+  setCurrentQuestion(0);
+  setShowResult(false);
+  setResult(null);
+};
 
   return (
     <div className="mx-auto max-w-2xl animate-scale-in">
@@ -61,14 +70,15 @@ export const ResultDisplay = ({ result, disabilityType, score, maxScore }) => {
 
           <div className="flex flex-col gap-3 sm:flex-row">
             {disabilityType && (
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() =>  navigate(`/disability/${disabilityType}`)}
-            >
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Retake Test
-            </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={resetQuiz}
+
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Retake Test
+              </Button>
             )}
             {disabilityType && (
               <Button

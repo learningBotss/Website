@@ -8,27 +8,11 @@
     "created_at": "2025-12-22T10:00:00"
   },
   {
-    "id": 2,
-    "email": "user@example.com",
-    "full_name": "Normal User",
-    "role": "user",
-    "password": "user123",
-    "created_at": "2025-12-23T10:00:00"
-  },
-  {
     "id": 3,
     "email": "arif@gmail.com",
     "password": "123456",
     "full_name": "Arif Hilmi",
     "role": "user",
     "created_at": "2025-12-23T10:00:00"
-  },
-  {
-    "id": 4,
-    "email": "uhuk@example.com",
-    "password": "123456",
-    "full_name": "uhuk",
-    "role": "user",
-    "created_at": "2026-01-05T23:49:00.016763"
   }
 ]

@@ -64,11 +64,6 @@ export default function QualifyQuiz() {
   fetchPrevious();
 }, [user, forceRetake]);
 
-  const handleSelect = (value) => {
-    const newAnswers = [...answers];
-    newAnswers[currentQuestion] = { id: questions[currentQuestion].id, answer: value };
-    setAnswers(newAnswers);
-  };
 
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) setCurrentQuestion(currentQuestion + 1);
@@ -77,41 +72,61 @@ export default function QualifyQuiz() {
     if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
   };
 
-  const handleSubmit = async () => {
-    if (answers.some((a) => a === null)) {
-      alert("Please answer all questions!");
-      return;
-    }
+  // Store value for selection
+const handleSelect = (value) => {
+  const newAnswers = [...answers];
+  const question = questions[currentQuestion];
 
-    // scoring based on question weight
-    let totalScore = 0;
-    let maxScore = 0;
-
-    answers.forEach((a, idx) => {
-      const question = questions[idx];
-      const selectedOption = question.options.find((o) => o.value === a.answer);
-      const score = selectedOption ? selectedOption.score : 0;
-      totalScore += score;
-      maxScore += question.weight;
-    });
-
-    const percentage = Math.round((totalScore / maxScore) * 100);
-    const passed = percentage >= 60;
-
-    setPassed(passed);
-    setShowResult(true);
-
-    localStorage.setItem("qualifyPassed", passed);
-    localStorage.setItem("qualifyScore", percentage);
-
-    if (user) {
-      try {
-        await saveQuizResult(user.id, "First Qualification", answers);
-      } catch (err) {
-        console.error("Failed to save quiz result:", err);
-      }
-    }
+  
+  newAnswers[currentQuestion] = {
+    id: question.id,
+    type: question.quiz_type,
+    answer: Number(value),
   };
+
+  setAnswers(newAnswers);
+};
+
+const handleSubmit = async () => {
+  if (answers.some((a) => a === null)) {
+    alert("Please answer all questions!");
+    return;
+  }
+
+  // Convert value -> score for submission
+  const answersWithScore = answers.map((a, idx) => {
+    const question = questions[idx];
+    const selectedOption = question.options.find((o) => o.score === a.answer);
+    return {
+      ...a,
+      answer: selectedOption ? selectedOption.score : 0, // send score
+    };
+  });
+
+  // totalScore and maxScore
+  const totalScore = answersWithScore.reduce((sum, a) => sum + a.answer, 0);
+  const maxScore = questions.reduce(
+    (sum, q) => sum + Math.max(...q.options.map((o) => o.score)),
+    0
+  );
+
+  const percentage = Math.round((totalScore / maxScore) * 100);
+  const passed = percentage >= 60;
+
+  setPassed(passed);
+  setShowResult(true);
+
+  localStorage.setItem("qualifyPassed", passed);
+  localStorage.setItem("qualifyScore", percentage);
+
+  if (user) {
+    try {
+      await saveQuizResult(user.id, "First Qualification", answersWithScore); // <-- send SCORE
+    } catch (err) {
+      console.error("Failed to save quiz result:", err);
+    }
+  }
+};
 
   const handleRetry = () => {
     setCurrentQuestion(0);
@@ -158,7 +173,12 @@ export default function QualifyQuiz() {
                 {previousResult.passed ? "You passed the qualification. Please proceed to Second Assessment." : "No Significant Learning Difficulties Detected."}
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Button onClick={() => navigate("/second-screening", { state: { forceRetake: true } })}><FastForward className="mr-2 h-4 w-4"/> Go to Second Assessment</Button>
+                {previousResult.passed && (
+                  <Button onClick={() => navigate("/second-screening", { state: { forceRetake: true } })}>
+                    <FastForward className="mr-2 h-4 w-4"/> Go to Second Assessment
+                  </Button>
+                )}
+
                 <Button variant="hero" onClick={handleRetry}><RotateCcw className="mr-2 h-4 w-4"/> Retake Quiz</Button>
               </div>
             </CardContent>

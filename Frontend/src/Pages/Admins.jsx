@@ -190,14 +190,20 @@ const Admin = () => {
     if (user?.role === "admin") fetchAll();
   }, [user, toast]);
 
-  const generateOptions = (quiz_type, weight) => {
-    const labels = ["Never", "Sometimes", "Often", "Always"];
-    return labels.map((label, i) => ({
+ const generateOptions = (quiz_type, weight) => {
+  const labels = ["Never", "Sometimes", "Often", "Always"];
+  return labels.map((label, i) => {
+    let score = 0; 
+    if (label === "Never") score = 0;
+    else score = Math.round(weight * i / (labels.length - 1) * 100) / 100;
+    return {
       value: i + 1,
       label,
-      score: Math.round(weight * (i + 1) / labels.length * 100) / 100
-    }));
-  };
+      score
+    };
+  });
+};
+
 
   const handleSaveQuestion = async () => {
     if (!formData.question_text) {
@@ -284,7 +290,7 @@ const Admin = () => {
             <TabsTrigger value="questions"><FileQuestion className="mr-2 h-4 w-4" />Questions</TabsTrigger>
             <TabsTrigger value="users"><Users className="mr-2 h-4 w-4" />Users ({users.length})</TabsTrigger>
             <TabsTrigger value="results">Results ({results.length})</TabsTrigger>
-            <TabsTrigger value="second"><Settings className="mr-2 h-4 w-4" />Second Assessment</TabsTrigger>
+            <TabsTrigger value="second"><Settings className="mr-2 h-4 w-4" />Second Qualification</TabsTrigger>
           </TabsList>
 
           {/* Questions Tab */}
@@ -422,12 +428,58 @@ const Admin = () => {
                       <TableRow key={r.quiz_id || r.id}>
                         <TableCell>{users.find(u => u.id === r.user_id)?.full_name || "-"}</TableCell>
                         <TableCell className="capitalize">{r.type || r.quiz_type}</TableCell>
-                        <TableCell>{r.percentage ? `${r.percentage}%` : "-"}</TableCell>
                         <TableCell>
-                          {["First Qualification", "Second Qualification"].includes(r.type || r.quiz_type) ? (
-                            r.passed !== undefined ? (r.passed ? "Pass" : "Fail") : "-"
+                          {r.type === "Second Qualification" && typeof r.percentage === "object" ? (
+                            <div className="space-y-1">
+                              {Object.entries(r.percentage).map(([type, pct]) => (
+                                <div key={type} className="text-xs capitalize">
+                                  {type}: {Math.round(pct)}%
+                                </div>
+                              ))}
+                            </div>
+                          ) : r.percentage !== null && r.percentage !== undefined ? (
+                            `${Math.round(r.percentage)}%`
                           ) : (
-                            <span className={getLevel(r.percentage) === "High" ? "text-success font-medium" : getLevel(r.percentage) === "Moderate" ? "text-warning font-medium" : "text-destructive font-medium"}>
+                            "-"
+                          )}
+                        </TableCell>
+
+                        <TableCell>
+                         {/* FIRST QUALIFICATION */}
+                          {r.type === "First Qualification" ? (
+                            r.passed ? "Pass" : "Fail"
+
+                          /* SECOND QUALIFICATION */
+                          ) : r.type === "Second Qualification" && typeof r.percentage === "object" ? (
+                            <div className="flex flex-wrap gap-2">
+                              {Object.entries(r.percentage).map(([type, pct]) => {
+                                const detected = pct >= 60;
+                                return (
+                                  <span
+                                    key={type}
+                                    className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
+                                      detected
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-gray-100 text-gray-600"
+                                    }`}
+                                  >
+                                    {type}: {detected ? "Detected" : "Not Detected"}
+                                  </span>
+                                );
+                              })}
+                            </div>
+
+                          /* OTHER QUIZ */
+                          ) : (
+                            <span
+                              className={
+                                getLevel(r.percentage) === "High"
+                                  ? "text-success font-medium"
+                                  : getLevel(r.percentage) === "Moderate"
+                                  ? "text-warning font-medium"
+                                  : "text-destructive font-medium"
+                              }
+                            >
                               {getLevel(r.percentage)}
                             </span>
                           )}

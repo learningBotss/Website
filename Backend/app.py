@@ -52,11 +52,15 @@ class UserOut(BaseModel):
 
 class Answer(BaseModel):
     id: int
-    answer: int
+    answer: float 
+    quiz_type: str
+    type : Optional[str] = None
+    disability: str
 
 class AnswerIn(BaseModel):
     id: int
-    answer: int
+    type: str
+    answer: float
 
 class QuizResultIn(BaseModel):
     user_id: int
@@ -82,6 +86,7 @@ class QuizSubmission(BaseModel):
 class QuizResult(BaseModel):
     probability: str
     percentage: float
+    answers: List[Answer]
 
 class MessageItem(BaseModel):
     role: str
@@ -107,6 +112,25 @@ def load_json(name: str):
         return []
     with open(file_path, "r") as f:
         return json.load(f)
+
+def build_question_map():
+    question_map = {}
+    for fname in ["general", "dyslexia", "dysgraphia", "dyscalculia"]:
+        questions = load_json(fname)
+        # ambil nama file sebagai 'disability'
+        disability = fname.replace(".json", "")
+        for q in questions:
+            option_score_map = {opt["score"]: opt["score"] for opt in q["options"]}
+            # guna key unik
+            q_key = f"{disability}_{q['id']}"
+            question_map[q_key] = {
+                "weight": q["weight"],
+                "options": option_score_map,
+                "quiz_type": q.get("quiz_type", disability),
+                "disability": disability
+            }
+    return question_map
+
 
 def questions_json(filename):
     path = BASE_PATH / filename
@@ -236,60 +260,60 @@ def get_quiz(disability: str):
         raise HTTPException(status_code=404, detail=f"{disability}.json not found")
     return data
 
-@app.post("/api/qualification")
-def post_qualification(submission: QuizSubmission, user_id: int):
-    answers = submission.answers
-    if not answers:
-        return {"probability": "Low", "percentage": 0.0}
+# @app.post("/api/qualification")
+# def post_qualification(submission: QuizSubmission, user_id: int):
+#     answers = submission.answers
+#     if not answers:
+#         return {"probability": "Low", "percentage": 0.0}
 
-    # load question set to get weights & option scores
-    quiz_data = load_json("general")  # qualification.json
-    questions = {q["id"]: q for q in quiz_data}
+#     # Load questions from 'general.json'
+#     quiz_data = load_json("general")
+#     question_map = {q["id"]: q for q in quiz_data}
 
-    total_score = 0
-    max_score = 0
+#     total_score = 0
+#     max_score = 0
 
-    for a in answers:
-        q = questions.get(a.id)
-        if not q:
-            continue
+#     for a in answers:
+#         q = question_map.get(a.id)
+#         if not q:
+#             continue
 
-        # max score comes from question weight
-        max_score += q.get("weight", 1)
+#         # max score comes from question weight
+#         max_score += q.get("weight", 1)
 
-        # find selected option score
-        selected_option = next(
-            (opt for opt in q.get("options", []) if opt["value"] == a.answer),
-            None
-        )
-        if selected_option:
-            total_score += selected_option.get("score", 0)
+#         # find selected option score
+#         selected_option = next(
+#             (opt for opt in q.get("options", []) if opt["score"] == a.answer),
+#             None
+#         )
+#         if selected_option:
+#             total_score += selected_option.get("score", 0)
 
-    if max_score == 0:
-        percentage = 0.0
-    else:
-        percentage = (total_score / max_score) * 100
+#     if max_score == 0:
+#         percentage = 0.0
+#     else:
+#         percentage = round((total_score / max_score) * 100, 1)
 
-    probability = "High" if percentage >= 50 else "Low"
+#     probability = "High" if percentage >= 50 else "Low"
 
-    # Save to quiz_results.json (only latest per user)
-    all_results = load_json("quiz_results")
-    all_results = [r for r in all_results if r["user_id"] != user_id]
+#     # Save to quiz_results.json (only latest per user)
+#     all_results = load_json("quiz_results")
+#     all_results = [r for r in all_results if not (r["user_id"] == user_id and r.get("type") == "First Qualification")]
 
-    all_results.append({
-        "user_id": user_id,
-        "type": "First Qualification",
-        "percentage": round(percentage, 2),
-        "probability": probability,
-        "answers": [a.dict() for a in answers]
-    })
+#     new_result = {
+#         "user_id": user_id,
+#         "type": "First Qualification",
+#         "percentage": percentage,
+#         "probability": probability,
+#         "answers": [a.dict() for a in answers],
+#         "date": datetime.now().isoformat()
+#     }
 
-    save_json("quiz_results", all_results)
+#     all_results.append(new_result)
+#     save_json("quiz_results", all_results)
 
-    return {
-        "probability": probability,
-        "percentage": round(percentage, 2)
-    }
+#     return {"probability": probability, "percentage": percentage}
+
 
 
 #--Second Screening Config--
@@ -300,7 +324,17 @@ def get_second_screening():
 
     for disability, ids in config["questions"].items():
         all_q = load_json(disability)
-        result[disability] = [q for q in all_q if q["id"] in ids]
+        # filter ikut id yg ada dalam config
+        filtered_qs = [q for q in all_q if q["id"] in ids]
+
+        # sertakan weight dan score terus
+        for q in filtered_qs:
+            for opt in q.get("options", []):
+                # pastikan setiap option ada score (dari JSON)
+                opt["score"] = opt.get("score", 0)
+            q["weight"] = q.get("weight", 1)   
+
+        result[disability] = filtered_qs
 
     return {
         "threshold": config["threshold"],
@@ -342,46 +376,95 @@ class QuizSaveSubmission(BaseModel):
 @app.post("/api/quiz_result")
 def save_quiz_result(payload: QuizResultIn):
     results = load_json("quiz_results")
-
     threshold_map = {
         "First Qualification": 50,
-        "Second Qualification": 55,
+        "Second Qualification": 60,
         "dyslexia": 60,
         "dysgraphia": 60,
         "dyscalculia": 60
     }
 
-    total_score = sum(a.answer for a in payload.answers)
+    question_map = build_question_map()
+    # ===== Second Qualification =====
+    if payload.type == "Second Qualification":
+        # build scores
+        disability_scores = {}
+        disability_max = {}
 
-    max_score = len(payload.answers) * 4
+        for a in payload.answers:
+            q_key = f"{a.type.lower()}_{int(a.id)}"
+            q_info = question_map.get(q_key)
+            if not q_info:
+                continue
+            score = q_info["options"].get(float(a.answer), 0)
+            weight = q_info["weight"]
+            dis = a.type
+            disability_scores[dis] = disability_scores.get(dis, 0) + score
+            disability_max[dis] = disability_max.get(dis, 0) + weight
 
-    percentage = round((total_score / max_score) * 100, 1)
+        percentages = {}
+        passed_map = {}
+        for dis in disability_scores:
+            total_score = disability_scores[dis]
+            max_score = disability_max[dis]
+            percentage = round((total_score / max_score) * 100, 1)
+            threshold = threshold_map.get(dis, 60)
+            percentages[dis] = percentage
+            passed_map[dis] = percentage >= threshold
 
-    threshold = threshold_map.get(payload.type, 50)  
+        overall_passed = all(passed_map.values())
 
-    passed = percentage >= threshold
+        new_result = {
+            "quiz_id": len(results) + 1,
+            "user_id": payload.user_id,
+            "type": payload.type,
+            "percentage": percentages,      
+            "passed": overall_passed,    
+            "answers": [a.dict() for a in payload.answers],
+            "passed_map": passed_map,    
+            "date": datetime.now().isoformat()
+        }
 
-    new_result = {
-        "quiz_id": len(results) + 1,
-        "user_id": payload.user_id,
-        "type": payload.type,
-        "percentage": percentage,
-        "passed": passed,
-        "answers": [a.dict() for a in payload.answers],
-        "date": datetime.now().isoformat()
-    }
+    else:
+        total_score = 0
+        max_score = 0
+        for a in payload.answers:
+            q_key = f"{a.type.lower()}_{a.id}"
+            q_info = question_map.get(q_key)
+            if q_info:
+                weight = q_info.get("weight")
+                score = q_info["options"].get(float(a.answer), 0)
+                total_score += score
+                max_score += weight
+        if max_score == 0:
+            percentage = 0
+        else:
+            percentage = round((total_score / max_score) * 100, 1)
+        threshold = threshold_map.get(payload.type, 50)
+        passed = percentage >= threshold
+
+        new_result = {
+            "quiz_id": len(results) + 1,
+            "user_id": payload.user_id,
+            "type": payload.type,
+            "percentage": percentage,
+            "passed": passed,
+            "answers": [a.dict() for a in payload.answers],
+            "date": datetime.now().isoformat()
+        }
+
+
+
 
     # overwrite latest result untuk same user + type
     results = [
         r for r in results
         if not (r["user_id"] == payload.user_id and r["type"] == payload.type)
     ]
-
     results.append(new_result)
     save_json("quiz_results", results)
 
     return new_result
-
 
 
 # --- Past Results ---
@@ -463,11 +546,12 @@ def update_question(question_id: int, q: QuestionIn):
             item["quiz_type"] = q.quiz_type
             item["weight"] = q.weight
             option_labels = ["Never", "Sometimes", "Often", "Always"]
-            num_options = len(option_labels)
+            num_options = len(option_labels) - 1  # because first one is 0
             item["options"] = [
-                {"value": i, "label": label, "score": round(q.weight * i / num_options, 2)}
+                {"value": i, "label": label, "score": 0 if i == 1 else round(q.weight * (i-1) / num_options, 2)}
                 for i, label in enumerate(option_labels, start=1)
             ]
+
             saveQuestion_json(target_file, data)
             return {"id": question_id, "quiz_type": q.quiz_type, "text": q.text, "weight": q.weight, "options": item["options"]}
 
