@@ -111,7 +111,7 @@ const handleSubmit = async () => {
   );
 
   const percentage = Math.round((totalScore / maxScore) * 100);
-  const passed = percentage >= 60;
+  const passed = percentage >= 50;
 
   setPassed(passed);
   setShowResult(true);
@@ -170,7 +170,7 @@ const handleSubmit = async () => {
               </div>
               <h2 className="mb-2 text-2xl font-bold text-foreground">You've taken this quiz before!</h2>
               <p className="mb-6 text-muted-foreground">
-                {previousResult.passed ? "You passed the qualification. Please proceed to Second Assessment." : "No Significant Learning Difficulties Detected."}
+                {previousResult.passed ? "You passed the qualification. Please proceed to Second Assessment." : "😊 No Significant Learning Difficulties Detected."}
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 {previousResult.passed && (
@@ -197,9 +197,9 @@ const handleSubmit = async () => {
               <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${passed ? "bg-success/10" : "bg-destructive/10"}`}>
                 {passed ? <Trophy className="h-10 w-10 text-success"/> : <RotateCcw className="h-10 w-10 text-destructive"/>}
               </div>
-              <h2 className="mb-2 text-2xl font-bold text-foreground">{passed ? "Passed Part 1!" : "Not Qualified Yet"}</h2>
+              <h2 className="mb-2 text-2xl font-bold text-foreground">{passed ? "Passed Part 1!" : "😊 No Significant Learning Difficulties Detected"}</h2>
               <p className="mb-6 text-muted-foreground">
-                {passed ? "Please proceed to Second Qualification Assessment." : "No Significant Learning Difficulties Detected."}
+                {passed ? "Based on your responses, a follow-up assessment is recommended to better understand your learning profile." : " Based on your responses, there are no strong indicators of dyslexia, dysgraphia, or dyscalculia at this time. This screening is not a diagnosis. If you experience learning challenges in the future, you may retake the test or consult an educational professional."}
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 {passed ? (
@@ -222,7 +222,7 @@ const handleSubmit = async () => {
     <div className="min-h-screen bg-gradient-hero px-4 py-8 flex justify-center items-start">
       <div className="w-full max-w-2xl">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-foreground">First Qualification Assessment</h1>
+          <h1 className="text-3xl font-bold text-foreground">First Assessment</h1>
           <p className="mt-2 text-muted-foreground">Answer these questions to help us understand your learning needs</p>
         </div>
         <Card className="shadow-lg">
@@ -232,7 +232,7 @@ const handleSubmit = async () => {
           <CardContent>
             <QuizQuestion
               question={question}
-              selectedAnswer={answers[currentQuestion]?.answer || null}
+              selectedAnswer={answers[currentQuestion]?.answer ?? null}
               onSelect={handleSelect}
               questionNumber={currentQuestion + 1}
               totalQuestions={questions.length}

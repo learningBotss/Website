@@ -371,7 +371,8 @@ const Admin = () => {
                           <Button variant="ghost" size="sm" onClick={() => openEditDialog(q)}>
                             <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleDeleteQuestion(q.id)}>
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteQuestion(q.id, q.quiz_type)}>
+
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </TableCell>

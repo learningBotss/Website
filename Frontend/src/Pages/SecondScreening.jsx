@@ -4,7 +4,7 @@ import { Button } from "../components/ui/button.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.jsx";
 import QuizQuestion from "../components/QuizQuestion.jsx";
 import { getSecondScreening, saveQuizResult, getLatestQuizResult } from "../api.jsx";
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, ShieldAlert, XCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function SecondScreening() {
@@ -29,7 +29,12 @@ export default function SecondScreening() {
       try {
         const resQuestions = await getSecondScreening();
         const fetchedQuestions = Object.entries(resQuestions.data.questions || {}).flatMap(
-          ([type, qs]) => qs.map(q => ({ ...q, disability: type }))
+          ([type, qs]) =>
+            qs.map(q => ({
+              ...q,
+              disability: type,
+              options: q.options.filter(o => o.label !== "Never")
+            }))
         );
         setAllQuestions(fetchedQuestions);
 
@@ -156,12 +161,12 @@ export default function SecondScreening() {
     return (
       <div className="min-h-screen bg-gradient-hero px-4 py-8 flex justify-center">
         <div className="w-full max-w-lg">
-          <Card className={`shadow-lg ${passed ? "border-success/50" : "border-destructive/50"}`}>
+          <Card className={`shadow-lg ${passed ? "border-destructive/50" : "border-success/50"}`}>
             <CardContent className="pt-8 text-center">
               <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${
-                passed ? "bg-success/10" : "bg-destructive/10"
+                passed ? "bg-destructive/50" : "bg-success/10"
               }`}>
-                {passed ? <CheckCircle  className="h-10 w-10 text-success"/> : <XCircle className="h-10 w-10 text-destructive"/>}
+                {passed ? <ShieldAlert  className="h-10 w-10 text-destructive"/> : <XCircle className="h-10 w-10 text-success"/>}
               </div>
 
               <h2 className="mb-4 text-2xl font-bold">
@@ -171,23 +176,23 @@ export default function SecondScreening() {
               {displayDisabilities.length > 0 ? (
                 <div className="mb-6 rounded-xl bg-muted p-4 space-y-6">
                   {displayDisabilities.map(d => (
-                    <div key={d.disability} className="p-4 rounded-xl bg-green-50 border-l-4 border-success shadow-md">
+                    <div key={d.disability} className="p-4 rounded-xl bg-white border-l-4 border-destructive/50 shadow-md">
                       <p className="font-semibold text-lg mb-2">Result</p>
                       <p className="mb-2">
                         Based on your responses, you may have <span className="capitalize font-bold">{d.disability}</span>.
                       </p>
                       <div className="w-full h-5 rounded-full bg-gray-200">
-                        <div className="h-5 rounded-full bg-success shadow-lg transition-all duration-1000" style={{width: `${d.percentage}%`}}/>
+                        <div className="h-5 rounded-full bg-destructive/50 shadow-lg transition-all duration-1000" style={{width: `${d.percentage}%`}}/>
                       </div>
-                      <p className="text-sm mt-1 font-semibold text-success">{d.percentage}%</p>
+                      <p className="text-sm mt-1 font-semibold text-destructive">{d.percentage}%</p>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="mb-6 rounded-xl bg-yellow-50 p-4">
-                  <p className="text-yellow-800 font-semibold mb-2">Keep Going!</p>
+                  <p className="text-yellow-800 font-semibold mb-2">😊 No Significant Learning Difficulties Detected</p>
                   <p className="text-sm text-yellow-800">
-                    No dominant indicators detected above {threshold}%. You can either exit or try retaking the assessment.
+                    Based on your responses, there are no strong indicators of dyslexia, dysgraphia, or dyscalculia at this time. This screening is not a diagnosis. If you experience learning challenges in the future, you may retake the test or consult an educational professional.
                   </p>
                 </div>
               )}
@@ -234,7 +239,7 @@ export default function SecondScreening() {
       <div className="w-full max-w-2xl">
         <Card>
           <CardHeader>
-            <CardTitle>Second Qualification Assessment</CardTitle>
+            <CardTitle>Second Assessment</CardTitle>
           </CardHeader>
           <CardContent>
             <QuizQuestion
@@ -252,7 +257,7 @@ export default function SecondScreening() {
 
               {currentQuestionIndex === allQuestions.length - 1 ? (
                 <Button variant="hero" onClick={handleSubmit}>
-                  Submit <CheckCircle className="ml-2 h-4 w-4"/>
+                  Submit <ShieldAlert className="ml-2 h-4 w-4"/>
                 </Button>
               ) : (
                 <Button onClick={() => setCurrentQuestionIndex(i => i + 1)} disabled={!answers[currentQuestionIndex]}>

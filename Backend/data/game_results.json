@@ -105,5 +105,25 @@
         }
       }
     }
+  },
+  {
+    "user_id": "4",
+    "disabilities": {
+      "dyslexia": {
+        "drag_drop": {
+          "user_id": "4",
+          "disability_type": "dyslexia",
+          "activity_type": "drag_drop",
+          "score": 4,
+          "attempts": null,
+          "completed": true,
+          "data": {
+            "attempts": 5,
+            "totalItems": 4
+          },
+          "date": "2026-01-15T13:04:21.712552"
+        }
+      }
+    }
   }
 ]

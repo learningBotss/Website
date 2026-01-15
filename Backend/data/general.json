@@ -3,7 +3,7 @@
     "id": 1,
     "text": "Did the student have slow processing speed?",
     "quiz_type": "general",
-    "weight": 3,
+    "weight": 4,
     "options": [
       {
         "value": 1,
@@ -13,17 +13,17 @@
       {
         "value": 2,
         "label": "Sometimes",
-        "score": 1.0
+        "score": 1.33
       },
       {
         "value": 3,
         "label": "Often",
-        "score": 2.0
+        "score": 2.67
       },
       {
         "value": 4,
         "label": "Always",
-        "score": 3.0
+        "score": 4.0
       }
     ]
   },

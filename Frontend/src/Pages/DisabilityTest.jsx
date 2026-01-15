@@ -128,12 +128,12 @@ const DisabilityTest = () => {
     const question = questions[idx];
     const weight = question.weight || 1;
 
-    totalScore += score * weight;
+    totalScore += score;
 
     const maxOptionScore = Math.max(
       ...question.options.map((o) => o.score)
     );
-    maxScore += maxOptionScore * weight;
+    maxScore += weight;
   });
 
   const percentage = (totalScore / maxScore) * 100;
@@ -149,7 +149,7 @@ const DisabilityTest = () => {
     const payloadAnswers = questions.map((q, index) => ({
       id: q.id,
       type,
-      answer: answers[index], // 🔥 THIS IS SCORE NOW
+      answer: answers[index], 
     }));
 
     await saveQuizResult(user.id, type, payloadAnswers);

@@ -14,5 +14,21 @@
     "full_name": "Arif Hilmi",
     "role": "user",
     "created_at": "2025-12-23T10:00:00"
+  },
+  {
+    "id": 4,
+    "email": "new@gmail.com",
+    "password": "new123",
+    "full_name": "new",
+    "role": "user",
+    "created_at": "2026-01-15T13:00:36.136052"
+  },
+  {
+    "id": 5,
+    "email": "baru@gmail.com",
+    "password": "baru123",
+    "full_name": "baru",
+    "role": "user",
+    "created_at": "2026-01-15T15:37:17.689100"
   }
 ]

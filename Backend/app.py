@@ -260,61 +260,6 @@ def get_quiz(disability: str):
         raise HTTPException(status_code=404, detail=f"{disability}.json not found")
     return data
 
-# @app.post("/api/qualification")
-# def post_qualification(submission: QuizSubmission, user_id: int):
-#     answers = submission.answers
-#     if not answers:
-#         return {"probability": "Low", "percentage": 0.0}
-
-#     # Load questions from 'general.json'
-#     quiz_data = load_json("general")
-#     question_map = {q["id"]: q for q in quiz_data}
-
-#     total_score = 0
-#     max_score = 0
-
-#     for a in answers:
-#         q = question_map.get(a.id)
-#         if not q:
-#             continue
-
-#         # max score comes from question weight
-#         max_score += q.get("weight", 1)
-
-#         # find selected option score
-#         selected_option = next(
-#             (opt for opt in q.get("options", []) if opt["score"] == a.answer),
-#             None
-#         )
-#         if selected_option:
-#             total_score += selected_option.get("score", 0)
-
-#     if max_score == 0:
-#         percentage = 0.0
-#     else:
-#         percentage = round((total_score / max_score) * 100, 1)
-
-#     probability = "High" if percentage >= 50 else "Low"
-
-#     # Save to quiz_results.json (only latest per user)
-#     all_results = load_json("quiz_results")
-#     all_results = [r for r in all_results if not (r["user_id"] == user_id and r.get("type") == "First Qualification")]
-
-#     new_result = {
-#         "user_id": user_id,
-#         "type": "First Qualification",
-#         "percentage": percentage,
-#         "probability": probability,
-#         "answers": [a.dict() for a in answers],
-#         "date": datetime.now().isoformat()
-#     }
-
-#     all_results.append(new_result)
-#     save_json("quiz_results", all_results)
-
-#     return {"probability": probability, "percentage": percentage}
-
-
 
 #--Second Screening Config--
 @app.get("/api/second-screening")
@@ -560,8 +505,8 @@ def update_question(question_id: int, q: QuestionIn):
 
 
 # --- Delete Question ---
-@app.delete("/api/deleteQuestions/{question_id}")
-def delete_question(question_id: int, quiz_type: str):  # kena hantar quiz_type
+@app.delete("/api/deleteQuestions/{quiz_type}/{question_id}")
+def delete_question(quiz_type: str, question_id: int):
     target_file = f"{quiz_type}.json"
     data = loadQuestion_json(target_file)
     new_data = [item for item in data if item["id"] != question_id]

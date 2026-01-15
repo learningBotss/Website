@@ -1,9 +1,44 @@
 [
   {
-    "quiz_id": 1,
+    "quiz_id": 3,
     "user_id": 1,
     "type": "First Qualification",
-    "percentage": 75.4,
+    "percentage": 94.7,
+    "passed": true,
+    "answers": [
+      {
+        "id": 1,
+        "type": "general",
+        "answer": 3.0
+      },
+      {
+        "id": 2,
+        "type": "general",
+        "answer": 5.0
+      },
+      {
+        "id": 3,
+        "type": "general",
+        "answer": 3.0
+      },
+      {
+        "id": 4,
+        "type": "general",
+        "answer": 5.0
+      },
+      {
+        "id": 5,
+        "type": "general",
+        "answer": 2.0
+      }
+    ],
+    "date": "2026-01-13T17:52:39.849402"
+  },
+  {
+    "quiz_id": 4,
+    "user_id": 4,
+    "type": "First Qualification",
+    "percentage": 91.2,
     "passed": true,
     "answers": [
       {
@@ -19,7 +54,7 @@
       {
         "id": 3,
         "type": "general",
-        "answer": 1.0
+        "answer": 3.0
       },
       {
         "id": 4,
@@ -29,19 +64,19 @@
       {
         "id": 5,
         "type": "general",
-        "answer": 2.0
+        "answer": 3.0
       }
     ],
-    "date": "2026-01-08T13:31:33.791369"
+    "date": "2026-01-15T13:01:21.141441"
   },
   {
-    "quiz_id": 3,
-    "user_id": 1,
+    "quiz_id": 4,
+    "user_id": 4,
     "type": "Second Qualification",
     "percentage": {
-      "dyslexia": 100.0,
+      "dyslexia": 77.8,
       "dysgraphia": 0.0,
-      "dyscalculia": 0.0
+      "dyscalculia": 17.6
     },
     "passed": true,
     "answers": [
@@ -58,7 +93,7 @@
       {
         "id": 6,
         "type": "dyslexia",
-        "answer": 5.0
+        "answer": 1.67
       },
       {
         "id": 1,
@@ -83,7 +118,7 @@
       {
         "id": 1,
         "type": "dyscalculia",
-        "answer": 0.0
+        "answer": 1.67
       },
       {
         "id": 2,
@@ -93,7 +128,7 @@
       {
         "id": 4,
         "type": "dyscalculia",
-        "answer": 0.0
+        "answer": 1.33
       },
       {
         "id": 6,
@@ -106,6 +141,239 @@
       "dysgraphia": false,
       "dyscalculia": false
     },
-    "date": "2026-01-08T15:14:57.889567"
+    "date": "2026-01-15T13:01:41.651395"
+  },
+  {
+    "quiz_id": 5,
+    "user_id": 4,
+    "type": "dyslexia",
+    "percentage": 50.6,
+    "passed": false,
+    "answers": [
+      {
+        "id": 1,
+        "type": "dyslexia",
+        "answer": 2.0
+      },
+      {
+        "id": 2,
+        "type": "dyslexia",
+        "answer": 5.0
+      },
+      {
+        "id": 3,
+        "type": "dyslexia",
+        "answer": 2.67
+      },
+      {
+        "id": 4,
+        "type": "dyslexia",
+        "answer": 1.67
+      },
+      {
+        "id": 5,
+        "type": "dyslexia",
+        "answer": 0.0
+      },
+      {
+        "id": 6,
+        "type": "dyslexia",
+        "answer": 1.67
+      },
+      {
+        "id": 7,
+        "type": "dyslexia",
+        "answer": 2.0
+      },
+      {
+        "id": 8,
+        "type": "dyslexia",
+        "answer": 0.67
+      }
+    ],
+    "date": "2026-01-15T13:06:45.417102"
+  },
+  {
+    "quiz_id": 6,
+    "user_id": 5,
+    "type": "First Qualification",
+    "percentage": 100.0,
+    "passed": true,
+    "answers": [
+      {
+        "id": 1,
+        "type": "general",
+        "answer": 4.0
+      },
+      {
+        "id": 2,
+        "type": "general",
+        "answer": 5.0
+      },
+      {
+        "id": 3,
+        "type": "general",
+        "answer": 3.0
+      },
+      {
+        "id": 4,
+        "type": "general",
+        "answer": 5.0
+      },
+      {
+        "id": 5,
+        "type": "general",
+        "answer": 3.0
+      }
+    ],
+    "date": "2026-01-15T15:37:22.977770"
+  },
+  {
+    "quiz_id": 7,
+    "user_id": 5,
+    "type": "Second Qualification",
+    "percentage": {
+      "dyslexia": 22.3,
+      "dysgraphia": 62.5,
+      "dyscalculia": 94.1
+    },
+    "passed": true,
+    "answers": [
+      {
+        "id": 2,
+        "type": "dyslexia",
+        "answer": 1.67
+      },
+      {
+        "id": 4,
+        "type": "dyslexia",
+        "answer": 0.0
+      },
+      {
+        "id": 6,
+        "type": "dyslexia",
+        "answer": 1.67
+      },
+      {
+        "id": 1,
+        "type": "dysgraphia",
+        "answer": 0.0
+      },
+      {
+        "id": 2,
+        "type": "dysgraphia",
+        "answer": 4.0
+      },
+      {
+        "id": 4,
+        "type": "dysgraphia",
+        "answer": 2.0
+      },
+      {
+        "id": 6,
+        "type": "dysgraphia",
+        "answer": 4.0
+      },
+      {
+        "id": 1,
+        "type": "dyscalculia",
+        "answer": 5.0
+      },
+      {
+        "id": 2,
+        "type": "dyscalculia",
+        "answer": 5.0
+      },
+      {
+        "id": 4,
+        "type": "dyscalculia",
+        "answer": 4.0
+      },
+      {
+        "id": 6,
+        "type": "dyscalculia",
+        "answer": 2.0
+      }
+    ],
+    "passed_map": {
+      "dyslexia": false,
+      "dysgraphia": true,
+      "dyscalculia": true
+    },
+    "date": "2026-01-15T15:37:33.804595"
+  },
+  {
+    "quiz_id": 8,
+    "user_id": 1,
+    "type": "Second Qualification",
+    "percentage": {
+      "dyslexia": 88.9,
+      "dysgraphia": 60.4,
+      "dyscalculia": 33.4
+    },
+    "passed": true,
+    "answers": [
+      {
+        "id": 2,
+        "type": "dyslexia",
+        "answer": 5.0
+      },
+      {
+        "id": 4,
+        "type": "dyslexia",
+        "answer": 3.33
+      },
+      {
+        "id": 6,
+        "type": "dyslexia",
+        "answer": 5.0
+      },
+      {
+        "id": 1,
+        "type": "dysgraphia",
+        "answer": 3.33
+      },
+      {
+        "id": 2,
+        "type": "dysgraphia",
+        "answer": 4.0
+      },
+      {
+        "id": 4,
+        "type": "dysgraphia",
+        "answer": 1.0
+      },
+      {
+        "id": 6,
+        "type": "dysgraphia",
+        "answer": 1.33
+      },
+      {
+        "id": 1,
+        "type": "dyscalculia",
+        "answer": 1.67
+      },
+      {
+        "id": 2,
+        "type": "dyscalculia",
+        "answer": 1.67
+      },
+      {
+        "id": 4,
+        "type": "dyscalculia",
+        "answer": 1.33
+      },
+      {
+        "id": 6,
+        "type": "dyscalculia",
+        "answer": 1.0
+      }
+    ],
+    "passed_map": {
+      "dyslexia": true,
+      "dysgraphia": true,
+      "dyscalculia": false
+    },
+    "date": "2026-01-15T21:23:29.830620"
   }
 ]
