@@ -51,22 +51,40 @@ export default function SecondScreening() {
         } else if (latestRes?.data?.answers?.length) {
           const latestData = latestRes.data;
 
-          // Gunakan backend percentage & passed_map
-          const backendPercentages = Object.entries(latestData.percentage).map(([d, pct]) => ({
-            disability: d,
-            percentage: pct
-          }));
+          // ========================== NEW: HANDLE PASSED_MAP ==========================
+          if (latestData.passed_map) {
+            // Dominant = mana-mana passed
+            const dominantFromMap = Object.entries(latestData.passed_map)
+              .filter(([_, isPassed]) => isPassed)
+              .map(([dis, _]) => ({
+                disability: dis,
+                percentage: Math.round(latestData.percentage[dis] ?? 0)
+              }));
 
-          setDominantDisabilities(
-            backendPercentages.filter(d => d.percentage >= threshold)
-          );
+            // Kalau tiada yang lulus, pilih percentage tertinggi (tie handling)
+            let finalDominant = dominantFromMap;
+            if (finalDominant.length === 0) {
+              const maxPct = Math.max(...Object.values(latestData.percentage).map(p => Math.round(p)));
+              finalDominant = Object.entries(latestData.percentage)
+                .filter(([_, pct]) => Math.round(pct) === maxPct)
+                .map(([dis, pct]) => ({ disability: dis, percentage: Math.round(pct) }));
+            }
 
-          // Gunakan backend overall passed
-          setPassed(latestData.passed);
+            setDominantDisabilities(finalDominant);
+            setPassed(finalDominant.length > 0);
+          } else {
+            // fallback: guna backend percentages + threshold biasa
+            const backendPercentages = Object.entries(latestData.percentage).map(([d, pct]) => ({
+              disability: d,
+              percentage: Math.round(pct)
+            }));
+            const dominant = backendPercentages.filter(d => d.percentage >= threshold);
+            setDominantDisabilities(dominant);
+            setPassed(dominant.length > 0);
+          }
 
-          // Gunakan jawapan yang datang dari backend
+          // Jawapan & show result
           setAnswers(latestData.answers.map(a => ({ ...a, answer: a.answer })));
-
           setShowResult(true);
         } else {
           setAnswers(new Array(fetchedQuestions.length).fill(null));
@@ -80,6 +98,7 @@ export default function SecondScreening() {
 
     init();
   }, [user, forceRetake]);
+
 
   // ===================== HANDLE SELECTION =====================
   const handleSelect = (value) => {
@@ -146,8 +165,17 @@ export default function SecondScreening() {
       percentage: Math.round((scoreMap[d] / maxMap[d]) * 100),
     }));
 
-    const passedAny = percentages.some(p => p.percentage >= threshold);
-    const dominant = percentages.filter(p => p.percentage >= threshold);
+    // Dominant = yang lulus threshold
+    let dominant = percentages.filter(p => p.percentage >= threshold);
+
+    // Kalau tiada satu pun lulus threshold, pilih satu dengan percentage tertinggi
+    if (dominant.length === 0 && percentages.length > 0) {
+      const maxPct = Math.max(...percentages.map(p => p.percentage));
+      // Pilih semua yg sama percentange kalau tie
+      dominant = percentages.filter(p => p.percentage === maxPct); 
+    }
+
+    const passedAny = dominant.length > 0;
 
     return { percentages, passedAny, dominant };
   };

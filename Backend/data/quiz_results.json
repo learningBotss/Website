@@ -307,8 +307,8 @@
     "user_id": 1,
     "type": "Second Qualification",
     "percentage": {
-      "dyslexia": 88.9,
-      "dysgraphia": 60.4,
+      "dyslexia": 33.4,
+      "dysgraphia": 33.3,
       "dyscalculia": 33.4
     },
     "passed": true,
@@ -316,27 +316,27 @@
       {
         "id": 2,
         "type": "dyslexia",
-        "answer": 5.0
+        "answer": 1.67
       },
       {
         "id": 4,
         "type": "dyslexia",
-        "answer": 3.33
+        "answer": 1.67
       },
       {
         "id": 6,
         "type": "dyslexia",
-        "answer": 5.0
+        "answer": 1.67
       },
       {
         "id": 1,
         "type": "dysgraphia",
-        "answer": 3.33
+        "answer": 1.67
       },
       {
         "id": 2,
         "type": "dysgraphia",
-        "answer": 4.0
+        "answer": 1.33
       },
       {
         "id": 4,
@@ -372,8 +372,8 @@
     "passed_map": {
       "dyslexia": true,
       "dysgraphia": true,
-      "dyscalculia": false
+      "dyscalculia": true
     },
-    "date": "2026-01-15T21:23:29.830620"
+    "date": "2026-01-16T01:18:36.533372"
   }
 ]

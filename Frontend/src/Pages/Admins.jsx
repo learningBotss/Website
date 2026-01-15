@@ -454,7 +454,7 @@ const Admin = () => {
                           ) : r.type === "Second Qualification" && typeof r.percentage === "object" ? (
                             <div className="flex flex-wrap gap-2">
                               {Object.entries(r.percentage).map(([type, pct]) => {
-                                const detected = pct >= 60;
+                                const detected = r.passed_map?.[type] === true;
                                 return (
                                   <span
                                     key={type}

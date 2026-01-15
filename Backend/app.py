@@ -349,13 +349,23 @@ def save_quiz_result(payload: QuizResultIn):
 
         percentages = {}
         passed_map = {}
+        int_percentages = {}
         for dis in disability_scores:
             total_score = disability_scores[dis]
             max_score = disability_max[dis]
             percentage = round((total_score / max_score) * 100, 1)
+            percentagesss = round((total_score / max_score) * 100) 
             threshold = threshold_map.get(dis, 60)
             percentages[dis] = percentage
+            int_percentages[dis] = percentagesss
             passed_map[dis] = percentage >= threshold
+
+        # Kalau semua False, pilih semua yang tie untuk max percentage
+        if not any(passed_map.values()) and int_percentages:
+            max_pct = max(int_percentages.values())
+            for dis, pct in int_percentages.items():
+                passed_map[dis] = pct == max_pct
+
 
         overall_passed = any(passed_map.values())
 
@@ -535,13 +545,13 @@ def get_all_users():
     ]
 
 
-# --- Admin: get all results ---
 @app.get("/api/allresults")
 def get_all_results():
     results = load_json("quiz_results")
-    # Return as is, but we can enrich if needed
-    return [
-        {
+    enriched = []
+
+    for r in results:
+        item = {
             "quiz_id": r.get("quiz_id") or r.get("id"),
             "user_id": r["user_id"],
             "type": r.get("type", r.get("quiz_type", "unknown")),
@@ -550,8 +560,16 @@ def get_all_results():
             "date": r.get("date") or r.get("created_at"),
             "answers": r.get("answers", [])
         }
-        for r in results
-    ]
+
+        # --- hanya untuk Second Qualification ---
+        if item["type"] == "Second Qualification":
+            # contohnya backend dah simpan passed per disability dalam r["passed_map"]
+            item["passed_map"] = r.get("passed_map", {})
+
+        enriched.append(item)
+
+    return enriched
+
 
 @app.post("/api/chat/send")
 async def send_message(request: ChatRequest):

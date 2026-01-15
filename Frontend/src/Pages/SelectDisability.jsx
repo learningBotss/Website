@@ -184,7 +184,7 @@ const recommendedDisabilities = latestResult
 
                           <div className="flex flex-wrap gap-3">
                             {Object.entries(result.percentage).map(([type, pct]) => {
-                              const detected = pct >= 60;
+                              const detected = result.passed_map?.[type] === true;
                               return (
                                 <span
                                   key={type}
@@ -194,7 +194,7 @@ const recommendedDisabilities = latestResult
                                       : "text-gray-600 bg-gray-100"
                                   }`}
                                 >
-                                  {type}: {Math.round(pct)}% —{" "}
+                                  {type}:{" "}
                                   {detected ? "Detected" : "Not Detected"}
                                 </span>
                               );
